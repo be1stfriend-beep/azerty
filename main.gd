@@ -11,7 +11,9 @@ func _ready() -> void:
 		await Data.data_loaded
 	if Game.has_arg("--screenshot"):
 		add_child(Screenshot.new(int(Game.arg_after("--screenshot")), Game.arg_after("--screenshot", 2)))
-	if Game.has_arg("--autotest-full"):
+	if Game.has_arg("--autotest-slice"):
+		add_child(AutotestSlice.new())
+	elif Game.has_arg("--autotest-full"):
 		add_child(AutotestFull.new())
 	elif Game.has_arg("--autotest"):
 		add_child(Autotest.new())
