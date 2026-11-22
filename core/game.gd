@@ -165,6 +165,8 @@ func _on_partner_lost() -> void:
 	if world == null:
 		_lobby.set_status("Partner lost")
 		return
+	# The peer is gone, so any multiplayer call from the world would error every frame.
+	world.process_mode = Node.PROCESS_MODE_DISABLED
 	_close_overlay()
 	_overlay = MessageOverlay.new("Partner lost", "Back to lobby")
 	_overlay.confirmed.connect(return_to_lobby)

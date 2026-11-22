@@ -58,8 +58,11 @@ func _process(delta: float) -> void:
 	_elapsed += delta
 	if _elapsed < REFRESH_SECONDS:
 		return
-	var text := "%s\nping %d ms\nloss %.1f %%" % [_role_text(), Net.rtt_ms(), Net.loss_percent()]
-	text += _bandwidth_text(_elapsed)
+	var text := _role_text()
+	# A closed peer errors on every statistics query, so only read them while connected.
+	if _is_connected():
+		text += "\nping %d ms\nloss %.1f %%" % [Net.rtt_ms(), Net.loss_percent()]
+		text += _bandwidth_text(_elapsed)
 	for key: String in _lines:
 		text += "\n%s: %s" % [key, _lines[key]]
 	_label.text = text
@@ -68,6 +71,11 @@ func _process(delta: float) -> void:
 
 func _toggle() -> void:
 	_panel.visible = not _panel.visible
+
+
+func _is_connected() -> bool:
+	var peer := multiplayer.multiplayer_peer as ENetMultiplayerPeer
+	return peer != null and peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
 
 
 func _role_text() -> String:
