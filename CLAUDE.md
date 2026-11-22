@@ -2,7 +2,7 @@
 
 Godot 4.7.2, GDScript (static typing), 3D, Compatibility renderer, Android landscape, 2-player online co-op.
 You are working on Windows with PowerShell inside VS Code. Tools are Python scripts, never .sh.
-Read this file, then ONLY the prompt named in the task from docs/PROMPTS.md. Read SPEC sections only when the prompt names them.
+Read this file, then docs/BRIEF.md (always), then ONLY the prompt named in the task. docs/BRIEF.md wins over every other doc. Read SPEC sections only when the prompt names them.
 
 ## How to work (very important)
 - NEVER ask the user a question. NEVER enter plan mode. Decide, implement, finish.
