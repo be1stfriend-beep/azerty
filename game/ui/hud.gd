@@ -17,6 +17,7 @@ const BAR_BACK := Color(0.0, 0.0, 0.0, 0.45)
 var _root: Control
 var _air_fill: ColorRect
 var _carried: Label
+var _objective: Label
 var _name_tag: Label
 var _perch_hint: Label
 var _stash: HBoxContainer
@@ -38,8 +39,10 @@ func _ready() -> void:
 	_hold_fill = _bar(Control.PRESET_CENTER, -HOLD_BAR_SIZE * 0.5 + Vector2(0, 160), HOLD_BAR_SIZE)
 	_hold_fill.color = Palette.IMAD_GOGGLES
 	_hold_back = _hold_fill.get_parent() as ColorRect
-	_name_tag = _label(Control.PRESET_CENTER_TOP, Vector2(0, MARGIN))
-	_perch_hint = _label(Control.PRESET_CENTER_TOP, Vector2(0, MARGIN + FONT_SIZE * 2.0))
+	_objective = _label(Control.PRESET_CENTER_TOP, Vector2(0, MARGIN))
+	_objective.add_theme_color_override("font_color", Palette.IMAD_GOGGLES)
+	_name_tag = _label(Control.PRESET_CENTER_TOP, Vector2(0, MARGIN + FONT_SIZE * 1.6))
+	_perch_hint = _label(Control.PRESET_CENTER_TOP, Vector2(0, MARGIN + FONT_SIZE * 3.2))
 	_perch_hint.text = "Climb down: Bjorn stands next to the perch, then press Interact"
 	_carried = _label(Control.PRESET_CENTER_BOTTOM, Vector2(0, -MARGIN - FONT_SIZE * 1.5))
 	_stash = HBoxContainer.new()
@@ -63,6 +66,11 @@ func _ready() -> void:
 	Events.item_crafted.connect(_show_card)
 	Events.air_changed.connect(_refresh_air)
 	_refresh()
+
+
+## Polled because the roach's hunt is not part of TeamState.
+func _process(_delta: float) -> void:
+	_objective.text = Objective.text()
 
 
 func _refresh() -> void:

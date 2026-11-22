@@ -18,6 +18,15 @@ const BREATH_SCALE := 0.03
 const RIDE_ARM_DEG := -125.0
 const RIDE_TAIL_DEG := -75.0
 const POSE_SPRING := 12.0
+const TONGS_REACH_SECONDS := 0.25
+const TONGS_RETURN_SECONDS := 0.2
+const TONGS_LENGTH := 0.95
+## Torso-local point the tongs are held from when they shoot forward.
+const TONGS_GRIP := Vector3(0, 0.35, 0.3)
+const TONGS_TIP_HEIGHT := 0.25
+const SACK_POSITION := Vector3(0.2, 0.08, -0.36)
+const SACK_POP := 1.3
+const SACK_POP_SECONDS := 0.1
 
 ## His own ground shadow would float in mid-air on Bjorn's back.
 var riding := false:
@@ -27,7 +36,11 @@ var riding := false:
 var torso: Node3D
 var tail: Node3D
 var hands: Array[Node3D] = []
+var tongs: Node3D
+var sack: Node3D
 
+var _tongs_stowed: Transform3D
+var _tongs_tween: Tween
 var _full_speed: float
 var _phase := 0.0
 var _breath := 0.0
@@ -52,9 +65,32 @@ static func build() -> CrawlRig:
 		ProcProps.part(arm, ProcProps.sphere(0.14), Vector3(0, -0.5, 0), "skin_b")
 		rig.hands.append(arm)
 	_build_head(t, 0.72)
-	t.add_child(_build_tongs())
+	rig.tongs = _build_tongs()
+	t.add_child(rig.tongs)
+	rig._tongs_stowed = rig.tongs.transform
+	rig.sack = ProcProps.part(t, ProcProps.sphere(0.2), SACK_POSITION, "char_white", Vector3.ZERO, Vector3(1, 0.9, 0.9))
 	Style.apply(rig)
 	return rig
+
+
+## Shoots the tongs out to a world point and back; the sack pops when they return.
+func reach_tongs(world_point: Vector3) -> void:
+	if _tongs_tween != null and _tongs_tween.is_valid():
+		_tongs_tween.kill()
+		tongs.transform = _tongs_stowed
+	var offset := torso.to_local(world_point + Vector3.UP * TONGS_TIP_HEIGHT) - TONGS_GRIP
+	var length := maxf(offset.length(), TONGS_LENGTH * 0.5)
+	var direction := offset.normalized() if offset.length() > 0.0 else Vector3.FORWARD
+	var reach_basis := Basis(Quaternion(Vector3.UP, direction)) * Basis.from_scale(Vector3(1, length / TONGS_LENGTH, 1))
+	_tongs_tween = create_tween()
+	_tongs_tween.tween_property(tongs, "transform", Transform3D(reach_basis, TONGS_GRIP + direction * length * 0.5), TONGS_REACH_SECONDS)
+	_tongs_tween.tween_property(tongs, "transform", _tongs_stowed, TONGS_RETURN_SECONDS)
+	_tongs_tween.tween_property(sack, "scale", Vector3.ONE * SACK_POP, SACK_POP_SECONDS)
+	_tongs_tween.tween_property(sack, "scale", Vector3(1, 0.9, 0.9), SACK_POP_SECONDS)
+
+
+func sack_point() -> Vector3:
+	return sack.global_position
 
 
 ## The overalls end in a tapered, tied-off tail so it reads as "no legs" from any angle.
@@ -81,7 +117,7 @@ static func _build_head(t: Node3D, y: float) -> void:
 	eyes(t, 0.075, 0.065, Vector3(0, y, 0.17))
 
 
-## Stowed diagonally across the back; S3 extends them forward for a grab.
+## Stowed diagonally across the back until a grab shoots them forward.
 static func _build_tongs() -> Node3D:
 	var tongs := Node3D.new()
 	tongs.name = "Tongs"

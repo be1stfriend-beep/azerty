@@ -137,6 +137,7 @@ func load_world(level_name: String) -> Node3D:
 func _spawn_players() -> void:
 	world.add_child(MountController.new())
 	world.add_child(TrashHider.new())
+	world.add_child(InteractionCues.new())
 	world.add_child(AirSystem.new())
 	var roach := Cockroach.new()
 	var roach_marker := world.get_node_or_null("Markers/roach") as Node3D

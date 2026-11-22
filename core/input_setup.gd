@@ -11,7 +11,6 @@ const KEYS: Dictionary = {
 	"aim_down": KEY_DOWN,
 	"jump": KEY_SPACE,
 	"kick": KEY_J,
-	"grab": KEY_G,
 	"interact": KEY_E,
 	"use_tool": KEY_F,
 	"tool_next": KEY_R,

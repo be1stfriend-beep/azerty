@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
-REQUIRED = ["config", "balance", "items", "recipes", "prefabs", "entities", "dialogue"]
+REQUIRED = ["config", "balance", "items", "recipes", "prefabs", "entities", "dialogue", "hints"]
 
 
 def load_all() -> tuple[dict, dict, list[str]]:

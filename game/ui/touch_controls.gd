@@ -7,6 +7,10 @@ const STICK_RADIUS := 120.0
 const STICK_CAPTURE := 1.8
 const KNOB_RADIUS := 55.0
 const BUTTON_RADIUS := 90.0
+## Imad's one action button: well over the 150 px minimum so it is easy to hit blind.
+const BIG_BUTTON_RADIUS := 115.0
+const BIG_FONT_SIZE := 30
+const DIM_ALPHA := 0.3
 const BUTTON_GAP := 36.0
 const MARGIN := 70.0
 const FONT_SIZE := 34
@@ -52,7 +56,7 @@ func _on_touch_down(index: int, pos: Vector2) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	for i in _buttons.size():
-		if pos.distance_to(_button_center(i)) <= BUTTON_RADIUS:
+		if pos.distance_to(_button_center(i)) <= _radius(i):
 			_button_touches[index] = _buttons[i]["action"]
 			Input.action_press(_buttons[i]["action"])
 			get_viewport().set_input_as_handled()
@@ -95,24 +99,23 @@ func _press_strength(action: String, strength: float) -> void:
 ## Re-evaluated on every Events.context_changed.
 func _context_buttons() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
-	var merged := TeamState.mount_state() != MountController.SOLO
 	if Net.own_character() == Characters.Character.BJORN:
 		result = [{"label": "Jump", "action": "jump"}, {"label": "Kick", "action": "kick"}]
-		if merged:
+		if TeamState.mount_state() == MountController.MERGED:
 			result.append({"label": "Dismount", "action": "dismount"})
-	elif merged:
-		result = [
-			{"label": "Use tool", "action": "use_tool"}, {"label": "Interact", "action": "interact"},
-			{"label": "Next tool", "action": "tool_next"}, {"label": "Dismount", "action": "dismount"},
-		]
-	else:
-		result = [{"label": "Grab", "action": "grab"}, {"label": "Interact", "action": "interact"}]
-		var imad: Imad = null
-		if Game.world != null:
-			imad = Game.world.get_node_or_null("imad") as Imad
-		if imad != null and imad.bjorn_in_range:
-			var label := "Climb down" if TeamState.state.get("on_perch", false) else "Mount"
-			result.append({"label": label, "action": "mount"})
+		return result
+	var context: Dictionary = {}
+	if Game.world != null:
+		var cues := Game.world.get_node_or_null("InteractionCues") as InteractionCues
+		if cues != null:
+			context = cues.context
+	var label: String = context.get("label", Data.hint("label_none"))
+	var dim: bool = context.get("action", Interaction.NONE) == Interaction.NONE
+	result = [{"label": label, "action": "interact", "big": true, "dim": dim}]
+	# Tools beyond the tongs only exist in the full game, never in the slice.
+	if (TeamState.state.get("tools", []) as Array).size() > 1:
+		result.append({"label": "Use tool", "action": "use_tool"})
+		result.append({"label": "Next tool", "action": "tool_next"})
 	return result
 
 
@@ -143,10 +146,14 @@ func _stick_center() -> Vector2:
 
 ## Two columns in the bottom-right corner keep clear of the bottom-centre HUD and dialogue.
 func _button_center(i: int) -> Vector2:
-	var step := BUTTON_RADIUS * 2.0 + BUTTON_GAP
+	var step := BIG_BUTTON_RADIUS * 2.0 + BUTTON_GAP
 	var column := i % BUTTON_COLUMNS
 	var row := i / BUTTON_COLUMNS
-	return Vector2(size.x - MARGIN - BUTTON_RADIUS - column * step, size.y - MARGIN - BUTTON_RADIUS - row * step)
+	return Vector2(size.x - MARGIN - BIG_BUTTON_RADIUS - column * step, size.y - MARGIN - BIG_BUTTON_RADIUS - row * step)
+
+
+func _radius(i: int) -> float:
+	return BIG_BUTTON_RADIUS if _buttons[i].get("big", false) else BUTTON_RADIUS
 
 
 func _draw() -> void:
@@ -158,9 +165,12 @@ func _draw() -> void:
 	var held := _button_touches.values()
 	for i in _buttons.size():
 		var c := _button_center(i)
+		var radius := _radius(i)
+		var alpha := DIM_ALPHA if _buttons[i].get("dim", false) else 1.0
 		var fill := Palette.BJORN_POMPOM if _buttons[i]["action"] in held else Palette.RUST
-		draw_circle(c, BUTTON_RADIUS, Color(fill, 0.75))
-		draw_arc(c, BUTTON_RADIUS, 0.0, TAU, ARC_POINTS, Palette.BONE, 4.0)
+		draw_circle(c, radius, Color(fill, 0.75 * alpha))
+		draw_arc(c, radius, 0.0, TAU, ARC_POINTS, Color(Palette.BONE, alpha), 4.0)
 		var text: String = _buttons[i]["label"]
-		var baseline := c + Vector2(-BUTTON_RADIUS, FONT_SIZE * 0.35)
-		draw_string(font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, BUTTON_RADIUS * 2.0, FONT_SIZE, Palette.BONE)
+		var font_size := BIG_FONT_SIZE if _buttons[i].get("big", false) else FONT_SIZE
+		var baseline := c + Vector2(-radius, font_size * 0.35)
+		draw_string(font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, radius * 2.0, font_size, Color(Palette.BONE, alpha))

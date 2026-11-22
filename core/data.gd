@@ -63,6 +63,14 @@ func dialogue(id: String) -> Array:
 	return table[id]
 
 
+func hint(id: String) -> String:
+	var table := _table("hints")
+	if not table.has(id):
+		push_error("Data: missing hint '%s'" % id)
+		return id
+	return String(table[id])
+
+
 func level(level_name: String) -> Dictionary:
 	if not _levels.has(level_name):
 		push_error("Data: missing level '%s'" % level_name)

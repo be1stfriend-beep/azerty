@@ -39,6 +39,20 @@ func _rpc_request_use_tool(point: Vector3) -> void:
 		_server_use_tool(point, multiplayer.get_remote_sender_id())
 
 
+## The context button always grabs with the tongs, whatever tool is equipped.
+func request_grab(point: Vector3) -> void:
+	if multiplayer.is_server():
+		_server_grab(point, multiplayer.get_unique_id())
+	else:
+		_rpc_request_grab.rpc_id(1, point)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_request_grab(point: Vector3) -> void:
+	if multiplayer.is_server():
+		_server_grab(point, multiplayer.get_remote_sender_id())
+
+
 func request_tool_next() -> void:
 	if multiplayer.is_server():
 		_server_tool_next(multiplayer.get_unique_id())
@@ -99,12 +113,18 @@ func _server_use_tool(point: Vector3, sender: int) -> void:
 		return
 	match state.get("current_tool"):
 		"tongs":
-			_commit_if(StationRules.tongs(state, point, imad.global_position, Game.world.get_node("Entities")))
+			_server_grab(point, sender)
 		"broomstick":
 			var roach := Game.world.get_node_or_null("cockroach") as Cockroach
 			var reach := float(Data.balance("tongs_reach")) + float(Data.balance("broom_radius"))
 			if roach != null and StationRules.flat_distance(imad.global_position, point) <= reach:
 				roach.server_broom_hit(point, imad)
+
+
+func _server_grab(point: Vector3, sender: int) -> void:
+	var imad := Game.player(Characters.Character.IMAD)
+	if _is_imad(sender) and imad != null:
+		_commit_if(StationRules.tongs(state, point, imad.global_position, Game.world.get_node("Entities")))
 
 
 func _server_tool_next(sender: int) -> void:

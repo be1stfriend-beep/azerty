@@ -44,8 +44,15 @@ func _restore_dropped(entities: Node) -> void:
 		trash.show()
 
 
+## Waits for the tongs to arrive, then the trash shrinks into Imad's back sack.
 func _pop(trash: Node3D) -> void:
 	var tween := trash.create_tween()
+	tween.tween_interval(CrawlRig.TONGS_REACH_SECONDS)
 	tween.tween_property(trash, "scale", Vector3.ONE * POP_SCALE, POP_UP_SECONDS)
-	tween.tween_property(trash, "scale", Vector3.ZERO, POP_DOWN_SECONDS)
+	var imad := Game.player(Characters.Character.IMAD)
+	if imad != null:
+		tween.tween_property(trash, "global_position", (imad.rig as CrawlRig).sack_point(), CrawlRig.TONGS_RETURN_SECONDS)
+		tween.parallel().tween_property(trash, "scale", Vector3.ZERO, CrawlRig.TONGS_RETURN_SECONDS)
+	else:
+		tween.tween_property(trash, "scale", Vector3.ZERO, POP_DOWN_SECONDS)
 	tween.tween_callback(trash.hide)

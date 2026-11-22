@@ -10,7 +10,8 @@ const RETICLE_THICKNESS := 0.08
 const RETICLE_FLATTEN := 0.2
 
 var aim := Vector2(0, 1)
-var bjorn_in_range := false
+## The rider is steering the aim with the right stick, so auto-targeting steps aside.
+var aim_override := false
 
 var _riding := false
 var _reach: float
@@ -31,6 +32,7 @@ func _ready() -> void:
 	_reticle = _build_reticle()
 	add_child(_reticle)
 	Events.mount_changed.connect(_on_mount_changed)
+	Events.trash_picked.connect(_on_trash_picked)
 
 
 func _physics_process(delta: float) -> void:
@@ -41,6 +43,7 @@ func _physics_process(delta: float) -> void:
 		super._physics_process(delta)
 	if is_multiplayer_authority():
 		_read_actions(bjorn, delta)
+	_reticle.visible = _riding and aim_override
 	_reticle.global_position = reticle_point(bjorn) + Vector3.UP * RETICLE_HEIGHT
 
 
@@ -85,51 +88,30 @@ func _read_actions(bjorn: PlayerBase, delta: float) -> void:
 		return
 	if Input.is_action_just_pressed("tool_next"):
 		TeamState.request_tool_next()
-	_read_interact(bjorn if _riding else self)
 	if _riding:
 		var input := Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down")
-		if input.length() > AIM_DEADZONE:
+		aim_override = input.length() > AIM_DEADZONE
+		if aim_override:
 			aim = input
 		_send_aim(delta)
-		if Input.is_action_just_pressed("use_tool"):
-			TeamState.request_use_tool(reticle_point(bjorn))
-		if TeamState.mount_state() == MountController.MERGED and Input.is_action_just_pressed("dismount"):
-			controller.request_dismount()
-		return
-	var in_range := controller.can_mount(self, bjorn)
-	if in_range != bjorn_in_range:
-		bjorn_in_range = in_range
-		Events.context_changed.emit()
-	var perch_remount: bool = TeamState.state.get("on_perch", false) and Input.is_action_just_pressed("interact")
-	if in_range and (Input.is_action_just_pressed("mount") or perch_remount):
-		controller.request_mount()
-	if Input.is_action_just_pressed("grab") or Input.is_action_just_pressed("use_tool"):
+	if Input.is_action_just_pressed("use_tool"):
 		TeamState.request_use_tool(reticle_point(bjorn))
+	_read_context()
+	if not _riding and Input.is_action_just_pressed("mount") and controller.can_mount(self, bjorn):
+		controller.request_mount()
+	if TeamState.mount_state() == MountController.MERGED and Input.is_action_just_pressed("dismount"):
+		controller.request_dismount()
 
 
-## Interact counts from the body: Bjorn's when riding, Imad's own when solo.
-func _read_interact(body: PlayerBase) -> void:
+## One button does everything; a station keeps the press until release (tower holds).
+func _read_context() -> void:
 	if Input.is_action_just_pressed("interact"):
-		_station = _nearest_station(body.global_position)
-		if _station != null:
-			_station.interact(self)
+		var context := Interaction.resolve(self)
+		_station = context["target"] as Interactable if context["action"] == Interaction.STATION else null
+		Interaction.perform(self, context)
 	if Input.is_action_just_released("interact") and _station != null:
 		_station.release(self)
 		_station = null
-
-
-func _nearest_station(point: Vector3) -> Interactable:
-	var best: Interactable = null
-	var best_distance := INF
-	for node: Node in get_parent().get_node("Entities").get_children():
-		var station := node as Interactable
-		if station == null or not station.in_range(point):
-			continue
-		var distance := StationRules.flat_distance(point, station.global_position)
-		if distance < best_distance:
-			best = station
-			best_distance = distance
-	return best
 
 
 func _send_aim(delta: float) -> void:
@@ -137,12 +119,20 @@ func _send_aim(delta: float) -> void:
 	if _aim_elapsed < _sync_interval:
 		return
 	_aim_elapsed = 0.0
-	_rpc_aim.rpc(aim)
+	_rpc_aim.rpc(aim, aim_override)
 
 
 @rpc("authority", "call_remote", "unreliable")
-func _rpc_aim(value: Vector2) -> void:
+func _rpc_aim(value: Vector2, overriding: bool) -> void:
 	aim = value
+	aim_override = overriding
+
+
+## Every peer sees the tongs reach for the trash the host just accepted.
+func _on_trash_picked(id: String) -> void:
+	var trash := get_parent().get_node_or_null("Entities/%s" % id) as Node3D
+	if trash != null:
+		(rig as CrawlRig).reach_tongs(trash.global_position)
 
 
 func _on_mount_changed(mount: String) -> void:
@@ -157,9 +147,7 @@ func _on_mount_changed(mount: String) -> void:
 		global_position = TeamState.state.get("dismount_pos", global_position)
 		velocity = Vector3.ZERO
 		reset_remote_target()
-	if bjorn_in_range:
-		bjorn_in_range = false
-		Events.context_changed.emit()
+		aim_override = false
 
 
 func _build_reticle() -> MeshInstance3D:

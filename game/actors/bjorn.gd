@@ -3,6 +3,8 @@ extends PlayerBase
 
 const STATE_KICK := 2
 const KICK_SECONDS := 0.36
+const NUDGE_HEIGHT := 0.3
+const NUDGE_SECONDS := 0.15
 
 var _jump_speed: float
 var _merged_speed: float
@@ -61,6 +63,7 @@ func _action_input(delta: float) -> void:
 		_cooldown_left = float(Data.balance("kick_cooldown"))
 		_kick_left = KICK_SECONDS
 		rig.kick()
+		_nudge_trash()
 		request_kick()
 	if mount == MountController.MERGED and Input.is_action_just_pressed("dismount"):
 		var controller := get_parent().get_node_or_null("MountController") as MountController
@@ -75,6 +78,23 @@ func _extra_state() -> int:
 func _on_remote_state(state: int, previous: int) -> void:
 	if (state & STATE_KICK) != 0 and (previous & STATE_KICK) == 0:
 		rig.kick()
+		_nudge_trash()
+
+
+## Visual only: loose trash in front hops in place, so the peers never disagree on where it lies.
+func _nudge_trash() -> void:
+	var picked: Array = TeamState.state.get("picked", [])
+	for node: Node in get_parent().get_node("Entities").get_children():
+		if node.get_meta("kind", "") != "trash" or String(node.name) in picked:
+			continue
+		var trash := node as Node3D
+		var to_trash := trash.global_position - global_position
+		to_trash.y = 0.0
+		if to_trash.length() > float(Data.balance("kick_range")) or global_basis.z.dot(to_trash.normalized()) < float(Data.balance("kick_facing_dot")):
+			continue
+		var tween := trash.create_tween()
+		tween.tween_property(trash, "position:y", trash.position.y + NUDGE_HEIGHT, NUDGE_SECONDS).set_ease(Tween.EASE_OUT)
+		tween.tween_property(trash, "position:y", trash.position.y, NUDGE_SECONDS).set_ease(Tween.EASE_IN)
 
 
 func _is_solo() -> bool:
