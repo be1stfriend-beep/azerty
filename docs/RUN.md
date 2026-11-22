@@ -55,7 +55,7 @@ Network checklist (do these once):
 ## Troubleshooting
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| Cannot connect at all | Wrong IP, or different networks | Use the IP shown on the host's Network panel; both on the same Wi-Fi |
+| Cannot connect at all | Wrong IP, or different networks | Use the IP shown on the host's Network panel; both on the samem Wi-Fi |
 | Timeout message after Join | Firewall, Public profile, client isolation, mobile data | Add the firewall rule, set Private, turn isolation and mobile data off, try a phone hotspot |
 | Joins only when the PC is the client | PC firewall blocks inbound UDP 7777 | Add the firewall rule (admin PowerShell) |
 | App crashes at start | APK built with a different Godot version or missing data | Rebuild with `python tools/build_android.py`; check `adb logcat -s godot` |
