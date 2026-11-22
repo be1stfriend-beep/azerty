@@ -21,9 +21,10 @@ const FLEE_ARRIVE_DISTANCE := 1.0
 const FLEE_SPEED_MULT := 2.0
 const TURN_SPEED := 8.0
 const SNAP_DISTANCE := 6.0
+const AWAKE_STATES: Array[String] = [CHASE, WINDUP, CHARGE, STUNNED]
 
 var machine := StateMachine.new(IDLE)
-var hits := 0
+var hp := 0
 
 var _spawn := Vector3.ZERO
 var _charge_dir := Vector3.FORWARD
@@ -35,11 +36,13 @@ var _target_rot_y := 0.0
 
 func _init() -> void:
 	name = "cockroach"
+	add_to_group("vermin")
 
 
 func _ready() -> void:
 	_spawn = position
 	_target_position = position
+	hp = int(Data.balance("roach_hp"))
 	_rig = RoachBuilder.build()
 	add_child(_rig)
 	machine.changed.connect(_on_local_state_changed)
@@ -62,9 +65,10 @@ func _process(delta: float) -> void:
 func reset() -> void:
 	if machine.state == GONE:
 		return
-	hits = 0
+	hp = int(Data.balance("roach_hp"))
 	position = _spawn
 	_set_state(IDLE)
+	_refresh_bar()
 
 
 ## Host: a broom swing from Imad. Only counts while stunned.
@@ -75,14 +79,35 @@ func server_broom_hit(point: Vector3, imad: PlayerBase) -> void:
 	var from_perch := RoachTargets.is_on_perch(imad) and StationRules.flat_distance(imad.global_position, position) <= float(Data.balance("roach_perch_hit_range"))
 	if not (near_aim or from_perch):
 		return
-	hits += 1
-	_rpc_shake.rpc()
-	if hits >= int(Data.balance("roach_hits_to_flee")):
+	take_damage(int(Data.balance("broom_damage")), Characters.Character.IMAD)
+
+
+## Host: the shared vermin damage entry point. Damage never stuns, and a Charge always runs
+## to its end; a roach emptied mid-charge flees as soon as the charge is over.
+func take_damage(amount: int, source_character: int) -> void:
+	if not multiplayer.is_server() or not (machine.state in AWAKE_STATES) or hp <= 0:
+		return
+	hp = maxi(hp - amount, 0)
+	var source := Game.player(source_character)
+	var impact := position + Vector3.UP * BODY_RADIUS * 0.5
+	if source != null:
+		impact += _flat(source.global_position - position).limit_length(BODY_RADIUS)
+	_rpc_hit.rpc(hp, impact)
+	if hp == 0 and machine.state != CHARGE:
 		_set_state(FLEE)
+
+
+## Host: Bjorn's kick shoves the roach back a little, except mid-charge.
+func push(offset: Vector3) -> void:
+	if machine.state in AWAKE_STATES and machine.state != CHARGE:
+		position += _flat(offset)
 
 
 func _think(delta: float) -> void:
 	machine.tick(delta)
+	if hp == 0 and machine.state in AWAKE_STATES and machine.state != CHARGE:
+		_set_state(FLEE)
+		return
 	var target := RoachTargets.nearest(position)
 	match machine.state:
 		IDLE:
@@ -160,7 +185,7 @@ func _flat(v: Vector3) -> Vector3:
 
 func _set_state(next: String) -> void:
 	if next != machine.state:
-		_rpc_state.rpc(next, hits)
+		_rpc_state.rpc(next, hp)
 		machine.change(next)
 
 
@@ -169,12 +194,15 @@ func _send_sync(delta: float) -> void:
 	if _sync_elapsed < 1.0 / float(Data.balance("sync_hz")):
 		return
 	_sync_elapsed = 0.0
-	_rpc_sync.rpc(position, rotation.y, machine.state, machine.state == GONE)
+	_rpc_sync.rpc(position, rotation.y, machine.state, machine.state == GONE, hp)
 
 
 @rpc("authority", "call_remote", "unreliable_ordered")
-func _rpc_sync(pos: Vector3, rot_y: float, state: String, gate_open: bool) -> void:
+func _rpc_sync(pos: Vector3, rot_y: float, state: String, gate_open: bool, health: int) -> void:
 	_target_position = pos
+	if health != hp:
+		hp = health
+		_refresh_bar()
 	_target_rot_y = rot_y
 	# Redundant with the reliable state RPC; it only corrects a client that drifted.
 	if gate_open and machine.state != GONE:
@@ -184,18 +212,27 @@ func _rpc_sync(pos: Vector3, rot_y: float, state: String, gate_open: bool) -> vo
 
 
 @rpc("authority", "call_remote", "reliable")
-func _rpc_state(state: String, hit_count: int) -> void:
-	hits = hit_count
+func _rpc_state(state: String, health: int) -> void:
+	hp = health
 	machine.change(state)
 
 
 @rpc("authority", "call_local", "reliable")
-func _rpc_shake() -> void:
+func _rpc_hit(health: int, impact: Vector3) -> void:
+	hp = health
 	_rig.shake()
+	_rig.flash()
+	_rig.pop(impact)
+	_refresh_bar()
+
+
+func _refresh_bar() -> void:
+	_rig.set_health(float(hp) / float(Data.balance("roach_hp")), machine.state in AWAKE_STATES)
 
 
 func _on_local_state_changed(state: String) -> void:
 	_rig.set_windup(state == WINDUP)
+	_refresh_bar()
 	if state == IDLE:
 		position = _spawn
 		_target_position = _spawn

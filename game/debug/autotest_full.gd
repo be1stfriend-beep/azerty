@@ -110,15 +110,30 @@ func _roach_fight() -> void:
 	Game.player(Characters.Character.BJORN).respawn(LURE_SPOT)
 	var stunned := await _wait_for(func() -> bool: return roach.machine.state == Cockroach.STUNNED, ROACH_TIMEOUT)
 	_check("roach_charges_pillar", stunned, "roach %s at %s" % [roach.machine.state, roach.global_position])
+	await _kick(roach)
 	var reach := float(Data.balance("tongs_reach")) + float(Data.balance("broom_radius"))
-	for i in int(Data.balance("roach_hits_to_flee")):
+	var swings := ceili(float(roach.hp) / float(Data.balance("broom_damage")))
+	for i in swings:
 		var to_roach := roach.global_position - imad.global_position
 		to_roach.y = 0.0
 		TeamState._server_use_tool(imad.global_position + to_roach.limit_length(reach), _imad_id)
-	_check("broom_hits_until_flee", roach.machine.state == Cockroach.FLEE, "roach %s after %d hits" % [roach.machine.state, roach.hits])
+	_check("broom_hits_until_flee", roach.machine.state == Cockroach.FLEE and roach.hp == 0, "roach %s, hp %d after %d swings" % [roach.machine.state, roach.hp, swings])
 	var gone := await _wait_for(func() -> bool: return roach.machine.state == Cockroach.GONE, ROACH_TIMEOUT)
 	await get_tree().physics_frame
 	_check("gate_opens", gone and _gate_open(), "roach %s" % roach.machine.state)
+
+
+## Bjorn stands beside the stunned roach facing it; one kick takes the stunned amount off.
+func _kick(roach: Cockroach) -> void:
+	var bjorn := Game.player(Characters.Character.BJORN) as Bjorn
+	var side := Vector3.RIGHT * (Cockroach.BODY_RADIUS + float(Data.balance("kick_range")) * 0.5)
+	bjorn.respawn(roach.global_position + side)
+	bjorn.rotation.y = atan2(-side.x, -side.z)
+	await get_tree().physics_frame
+	var before := roach.hp
+	bjorn.server_kick(_bjorn_id)
+	var expected := before - int(Data.balance("kick_damage_stunned"))
+	_check("kick_hit", roach.hp == expected, "hp %d, expected %d" % [roach.hp, expected])
 
 
 func _gate_open() -> bool:

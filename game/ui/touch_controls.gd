@@ -97,8 +97,9 @@ func _context_buttons() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	var merged := TeamState.mount_state() != MountController.SOLO
 	if Net.own_character() == Characters.Character.BJORN:
-		result = [{"label": "Jump", "action": "jump"}]
-		result.append({"label": "Dismount", "action": "dismount"} if merged else {"label": "Kick", "action": "kick"})
+		result = [{"label": "Jump", "action": "jump"}, {"label": "Kick", "action": "kick"}]
+		if merged:
+			result.append({"label": "Dismount", "action": "dismount"})
 	elif merged:
 		result = [
 			{"label": "Use tool", "action": "use_tool"}, {"label": "Interact", "action": "interact"},
