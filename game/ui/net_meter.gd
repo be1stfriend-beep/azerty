@@ -82,8 +82,12 @@ func _is_connected() -> bool:
 func _role_text() -> String:
 	if not Net.is_online():
 		return "offline"
-	var character := "Bjorn" if Net.own_character() == Characters.Character.BJORN else "Imad"
-	return "%s as %s" % ["host" if Net.is_host() else "guest", character]
+	var own := Net.own_character()
+	var text := "%s as %s %s" % ["host" if Net.is_host() else "guest", Game.character_name(own), Game.player_names.get(own, Game.local_name)]
+	for character: int in Game.player_names:
+		if character != own:
+			text += "\npartner %s %s" % [Game.character_name(character), Game.player_names[character]]
+	return text
 
 
 ## Statistics are popped every refresh, even when hidden, so each reading covers one interval.

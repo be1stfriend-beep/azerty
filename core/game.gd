@@ -5,8 +5,15 @@ extends Node
 const POST_LAYER := 5
 ## Above the post layer, below the lobby.
 const TOUCH_LAYER := 8
+const DEFAULT_NAME := "Player"
+const MAX_NAME_LENGTH := 16
+
+## Either side: the partner's name arrived, so both names are known.
+signal partner_joined(partner_name: String, character: int)
 
 var world: Node3D
+var local_name: String = DEFAULT_NAME
+var player_names: Dictionary[int, String] = {}
 
 var _lobby: Lobby
 var _overlay: MessageOverlay
@@ -171,14 +178,44 @@ func return_to_lobby() -> void:
 	show_lobby()
 
 
+func clean_name(text: String) -> String:
+	var cleaned := text.strip_edges().left(MAX_NAME_LENGTH)
+	return DEFAULT_NAME if cleaned.is_empty() else cleaned
+
+
+func character_name(character: int) -> String:
+	return "Bjorn" if character == Characters.Character.BJORN else "Imad"
+
+
 func _on_connection_established() -> void:
+	player_names.clear()
+	_rpc_player_name.rpc_id(Net.partner_peer_id(), local_name)
+
+
+## Each side sends its name once on connect. The host's name follows the character
+## assignment on the same reliable channel, so the guest already knows its own role here.
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_player_name(sent_name: String) -> void:
+	if multiplayer.get_remote_sender_id() != Net.partner_peer_id():
+		return
+	var own := Net.own_character()
+	var partner := Characters.Character.IMAD if own == Characters.Character.BJORN else Characters.Character.BJORN
+	player_names[own] = local_name
+	player_names[partner] = clean_name(sent_name)
+	partner_joined.emit(player_names[partner], partner)
 	if Net.is_host():
+		get_tree().create_timer(float(Data.balance("join_notice_seconds"))).timeout.connect(_start_if_partner)
+
+
+## The partner (or the host itself) may have left during the join notice.
+func _start_if_partner() -> void:
+	if Net.is_host() and Net.partner_peer_id() != 0 and world == null:
 		start_match()
 
 
 func _on_partner_lost() -> void:
 	if world == null:
-		_lobby.set_status("Partner lost")
+		_lobby.on_partner_lost()
 		return
 	# The peer is gone, so any multiplayer call from the world would error every frame.
 	world.process_mode = Node.PROCESS_MODE_DISABLED
