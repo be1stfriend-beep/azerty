@@ -9,7 +9,7 @@ func reset() -> void:
 	if not multiplayer.is_server():
 		return
 	_commit({
-		"carried": [], "stash": {}, "tools": ["tongs"], "current_tool": "tongs",
+		"carried": [], "carried_ids": [], "drops": {}, "holding": "", "stash": {}, "tools": ["tongs"], "current_tool": "tongs",
 		"inventory": {}, "picked": [], "towers": [],
 		"mount": MountController.SOLO, "dismount_pos": Vector3.ZERO,
 		"air": float(Data.balance("air_max")), "hold_progress": 0.0, "on_perch": false,
@@ -146,6 +146,15 @@ func force_solo(drop_pos: Vector3) -> void:
 		_commit(next)
 	else:
 		_apply(next)
+
+
+## Air changes every frame, so it bypasses the reliable full-state push: the host sets it
+## locally and AirSystem sends it unreliably at air_sync_hz.
+func apply_air(value: float) -> void:
+	if state.is_empty():
+		return
+	state["air"] = value
+	Events.air_changed.emit(value)
 
 
 ## Host only: merge changes into the state and push it.

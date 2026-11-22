@@ -18,6 +18,7 @@ var _root: Control
 var _air_fill: ColorRect
 var _carried: Label
 var _name_tag: Label
+var _perch_hint: Label
 var _stash: HBoxContainer
 var _hold_back: ColorRect
 var _hold_fill: ColorRect
@@ -38,6 +39,8 @@ func _ready() -> void:
 	_hold_fill.color = Palette.IMAD_GOGGLES
 	_hold_back = _hold_fill.get_parent() as ColorRect
 	_name_tag = _label(Control.PRESET_CENTER_TOP, Vector2(0, MARGIN))
+	_perch_hint = _label(Control.PRESET_CENTER_TOP, Vector2(0, MARGIN + FONT_SIZE * 2.0))
+	_perch_hint.text = "Climb down: Bjorn stands next to the perch, then press Interact"
 	_carried = _label(Control.PRESET_CENTER_BOTTOM, Vector2(0, -MARGIN - FONT_SIZE * 1.5))
 	_stash = HBoxContainer.new()
 	_stash.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -58,22 +61,29 @@ func _ready() -> void:
 	_root.add_child(_card)
 	Events.state_changed.connect(_refresh)
 	Events.item_crafted.connect(_show_card)
+	Events.air_changed.connect(_refresh_air)
 	_refresh()
 
 
 func _refresh() -> void:
 	var state := TeamState.state
-	var ratio := float(state.get("air", 0.0)) / float(Data.balance("air_max"))
-	_air_fill.size.x = AIR_BAR_SIZE.x * clampf(ratio, 0.0, 1.0)
-	_air_fill.color = Palette.DANGER if ratio < AIR_LOW else Palette.RESTORED_TEAL
+	_refresh_air(float(state.get("air", 0.0)))
 	var carried: Array = state.get("carried", [])
 	_carried.text = "%d/%d   %s" % [carried.size(), int(Data.balance("carry_capacity")), String(state.get("current_tool", "")).capitalize()]
 	var own := "Bjorn" if Net.own_character() == Characters.Character.BJORN else "Imad"
 	_name_tag.text = "BJIMAD" if TeamState.mount_state() == MountController.MERGED else own
+	var own_imad := Net.own_character() == Characters.Character.IMAD
+	_perch_hint.visible = own_imad and bool(state.get("on_perch", false)) and TeamState.mount_state() == MountController.SOLO
 	var progress := float(state.get("hold_progress", 0.0))
 	_hold_back.visible = progress > 0.0
 	_hold_fill.size.x = HOLD_BAR_SIZE.x * progress
 	_refresh_stash(state.get("stash", {}))
+
+
+func _refresh_air(value: float) -> void:
+	var ratio := value / float(Data.balance("air_max"))
+	_air_fill.size.x = AIR_BAR_SIZE.x * clampf(ratio, 0.0, 1.0)
+	_air_fill.color = Palette.DANGER if ratio < AIR_LOW else Palette.RESTORED_TEAL
 
 
 func _refresh_stash(stash: Dictionary) -> void:

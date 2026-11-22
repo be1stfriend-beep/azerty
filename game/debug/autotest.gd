@@ -13,6 +13,13 @@ const BESIDE_BJORN := Vector3(1.0, 0, 0)
 ## Outside the Dome and the tower radius, and beyond the roach's wake distance.
 const OUTSIDE := Vector3(30, 0, 40)
 const RESPAWN_TOLERANCE := 1.0
+## Roach at its spawn (0,0,52): Imad 8 m away, Bjorn 21 m (inside bait range) then 51 m (outside).
+const BAIT_IMAD := Vector3(8, 0, 50)
+const BAIT_BJORN_NEAR := Vector3(20, 0, 45)
+const BAIT_BJORN_FAR := Vector3(30, 0, 10)
+## Where a charge from the south stops against the pillar at (0,0,36).
+const STUN_SPOT := Vector3(0, 0, 39.1)
+const FLEE_TIMEOUT := 12.0
 
 var _failures := 0
 var _passes := 0
@@ -36,6 +43,8 @@ func _run() -> void:
 	_test_craft()
 	await _test_tower()
 	await _test_air()
+	_test_roach_bait()
+	await _test_roach_flee()
 	print("autotest: %d PASS, %d FAIL" % [_passes, _failures])
 	get_tree().quit(1 if _failures > 0 else 0)
 
@@ -105,6 +114,7 @@ func _test_tower() -> void:
 func _test_air() -> void:
 	var bjorn := Game.player(Characters.Character.BJORN)
 	var imad := Game.player(Characters.Character.IMAD)
+	var dropped_id := _pick_one_trash(imad)
 	bjorn.respawn(OUTSIDE)
 	imad.respawn(OUTSIDE + BESIDE_BJORN)
 	var start := float(TeamState.state["air"])
@@ -114,7 +124,60 @@ func _test_air() -> void:
 	air.damage(float(Data.balance("air_max")))
 	var respawned := await _wait_for(func() -> bool: return _at_marker(bjorn) and _at_marker(imad), STEP_TIMEOUT)
 	_check("knockout_respawn", respawned and TeamState.mount_state() == MountController.SOLO, "bjorn at %s, imad at %s" % [bjorn.global_position, imad.global_position])
-	print("SKIP knockout_trash_drop (dropping carried trash arrives in P10)")
+	var trash := Game.world.get_node_or_null("Entities/%s" % dropped_id) as Node3D
+	var fall_point := OUTSIDE + BESIDE_BJORN
+	var ring_ok := trash != null and trash.visible \
+		and absf(StationRules.flat_distance(trash.global_position, fall_point) - float(Data.balance("knockout_drop_radius"))) < RESPAWN_TOLERANCE
+	var released: bool = not (dropped_id in TeamState.state["picked"]) and (TeamState.state["carried"] as Array).is_empty()
+	_check("knockout_trash_drop", dropped_id != "" and ring_ok and released, "id '%s' at %s" % [dropped_id, trash.global_position if trash != null else Vector3.ZERO])
+
+
+## Bjorn is the bait within roach_bait_range even when Imad is closer; beyond it, the nearest wins.
+func _test_roach_bait() -> void:
+	var bjorn := Game.player(Characters.Character.BJORN)
+	var imad := Game.player(Characters.Character.IMAD)
+	var roach := Game.world.get_node("cockroach") as Cockroach
+	imad.respawn(BAIT_IMAD)
+	bjorn.respawn(BAIT_BJORN_NEAR)
+	var near_pick := RoachTargets.nearest(roach.global_position)
+	bjorn.respawn(BAIT_BJORN_FAR)
+	var far_pick := RoachTargets.nearest(roach.global_position)
+	_check("roach_prefers_bjorn", near_pick == bjorn and far_pick == imad, "near pick %s, far pick %s" % [near_pick, far_pick])
+	bjorn.respawn((Game.world.get_node("Markers/bjorn") as Node3D).global_position)
+	imad.respawn((Game.world.get_node("Markers/imad") as Node3D).global_position)
+
+
+## A roach stunned at the pillar flees home to the south and never enters the Dome; the gate opens.
+func _test_roach_flee() -> void:
+	var roach := Game.world.get_node("cockroach") as Cockroach
+	var dome: Vector3 = Game.world.get_meta("dome", Vector3.ZERO)
+	roach.position = STUN_SPOT
+	roach._set_state(Cockroach.FLEE)
+	var closest := INF
+	var left := FLEE_TIMEOUT
+	while left > 0.0 and roach.machine.state != Cockroach.GONE:
+		closest = minf(closest, StationRules.flat_distance(roach.global_position, dome))
+		await get_tree().process_frame
+		left -= get_process_delta_time()
+	var outside_dome := closest > float(Data.balance("dome_radius"))
+	_check("roach_flee_avoids_dome", roach.machine.state == Cockroach.GONE and outside_dome, "state %s, closest to Dome %.1f m" % [roach.machine.state, closest])
+	var gate_body: StaticBody3D = null
+	for child in Game.world.get_node("Entities/gate_0").get_children():
+		if child is StaticBody3D:
+			gate_body = child
+	await get_tree().physics_frame
+	_check("gate_opens", gate_body != null and gate_body.collision_layer == 0, "gate collision layer still set")
+
+
+func _pick_one_trash(imad: PlayerBase) -> String:
+	for node: Node in Game.world.get_node("Entities").get_children():
+		if node.get_meta("kind", "") != "trash" or String(node.name) in TeamState.state["picked"]:
+			continue
+		var trash := node as Node3D
+		imad.respawn(trash.global_position + PICKUP_OFFSET)
+		TeamState._server_use_tool(trash.global_position, _imad_id)
+		return String(node.name)
+	return ""
 
 
 func _at_marker(player: PlayerBase) -> bool:

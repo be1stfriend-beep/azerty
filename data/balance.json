@@ -27,5 +27,10 @@
 	"roach_stun": 3.5,
 	"roach_hits_to_flee": 3,
 	"roach_hit_air": 15,
-	"roach_charge_max": 1.4
+	"roach_charge_max": 1.4,
+	"roach_perch_hit_range": 8.5,
+	"roach_bait_range": 25,
+	"roach_tower_guard_range": 20,
+	"air_sync_hz": 4,
+	"knockout_drop_radius": 2.0
 }

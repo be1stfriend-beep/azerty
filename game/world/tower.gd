@@ -39,6 +39,7 @@ func server_hold(held: bool, sender: int) -> void:
 		return
 	_holding = true
 	_elapsed = 0.0
+	TeamState.set_values({"holding": String(name)})
 
 
 func _process(delta: float) -> void:
@@ -65,7 +66,7 @@ func _cancel() -> void:
 		return
 	_holding = false
 	_pushed = 0.0
-	TeamState.set_values({"hold_progress": 0.0})
+	TeamState.set_values({"hold_progress": 0.0, "holding": ""})
 
 
 @rpc("authority", "call_local", "reliable")

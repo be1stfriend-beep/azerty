@@ -63,6 +63,7 @@ func _process(delta: float) -> void:
 	if _is_connected():
 		text += "\nping %d ms\nloss %.1f %%" % [Net.rtt_ms(), Net.loss_percent()]
 		text += _bandwidth_text(_elapsed)
+	text += "\nfps %d   draws %d" % [Performance.get_monitor(Performance.TIME_FPS), Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)]
 	for key: String in _lines:
 		text += "\n%s: %s" % [key, _lines[key]]
 	_label.text = text

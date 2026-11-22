@@ -23,6 +23,7 @@ static func tongs(state: Dictionary, point: Vector3, imad_pos: Vector3, entities
 		return {}
 	var next := state.duplicate(true)
 	next["carried"].append(best.get_meta("item"))
+	next["carried_ids"].append(String(best.name))
 	next["picked"].append(String(best.name))
 	return next
 
@@ -38,6 +39,7 @@ static func recycle(state: Dictionary) -> Dictionary:
 		var material: String = item.get("material", "")
 		stash[material] = int(stash.get(material, 0)) + int(item.get("yield", 0))
 	next["carried"] = []
+	next["carried_ids"] = []
 	return next
 
 
@@ -80,13 +82,22 @@ static func activate_tower(state: Dictionary, index: int) -> Dictionary:
 	next["inventory"]["filter"] = int(next["inventory"].get("filter", 0)) - 1
 	next["towers"].append(index)
 	next["hold_progress"] = 0.0
+	next["holding"] = ""
 	return next
 
 
-static func out_of_air(state: Dictionary, imad_spawn: Vector3) -> Dictionary:
+## Nothing is thrown away: carried trash goes back into the world in a ring where the team fell.
+static func out_of_air(state: Dictionary, imad_spawn: Vector3, fall_point: Vector3) -> Dictionary:
 	var next := state.duplicate(true)
 	next["air"] = float(Data.balance("air_max"))
+	var ids: Array = state.get("carried_ids", [])
+	var radius := float(Data.balance("knockout_drop_radius"))
+	for i in ids.size():
+		var angle := TAU * i / ids.size()
+		next["drops"][ids[i]] = Vector3(fall_point.x, 0.0, fall_point.z) + Vector3(cos(angle), 0.0, sin(angle)) * radius
+		next["picked"].erase(ids[i])
 	next["carried"] = []
+	next["carried_ids"] = []
 	next["mount"] = MountController.SOLO
 	next["dismount_pos"] = imad_spawn
 	next["on_perch"] = false

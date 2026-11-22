@@ -50,6 +50,13 @@ func reticle_point(bjorn: PlayerBase) -> Vector3:
 	return global_position + global_basis.z * SOLO_RETICLE_DISTANCE
 
 
+## On the perch he stays put until Bjorn collects him; crawling off would drop him into the fight.
+func _move_input() -> Vector2:
+	if TeamState.state.get("on_perch", false):
+		return Vector2.ZERO
+	return super._move_input()
+
+
 func _build_rig() -> CharacterBuilder:
 	return CharacterBuilder.build_imad()
 

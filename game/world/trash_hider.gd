@@ -25,6 +25,23 @@ func _on_state_changed() -> void:
 		if trash != null:
 			_pop(trash)
 		Events.trash_picked.emit(id)
+	_restore_dropped(entities)
+
+
+## Trash that left `picked` was dropped on a knockout: it reappears where the host put it.
+func _restore_dropped(entities: Node) -> void:
+	var picked: Array = TeamState.state.get("picked", [])
+	var drops: Dictionary = TeamState.state.get("drops", {})
+	for id: String in _hidden.keys():
+		if id in picked:
+			continue
+		_hidden.erase(id)
+		var trash := entities.get_node_or_null(id) as Node3D
+		if trash == null:
+			continue
+		trash.position = drops.get(id, trash.position)
+		trash.scale = Vector3.ONE
+		trash.show()
 
 
 func _pop(trash: Node3D) -> void:

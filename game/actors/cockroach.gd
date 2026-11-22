@@ -15,8 +15,9 @@ const BODY_RADIUS := 1.4
 const PLAYER_HIT_RADIUS := 1.8
 const PILLAR_HALF_SIZE := 1.0
 const KNOCKBACK_DISTANCE := 4.0
-const PERCH_HIT_RANGE := 3.5
-const FLEE_SECONDS := 5.0
+## Safety net only: fleeing normally ends on arrival at the spawn marker.
+const FLEE_SECONDS := 10.0
+const FLEE_ARRIVE_DISTANCE := 1.0
 const FLEE_SPEED_MULT := 2.0
 const TURN_SPEED := 8.0
 const SNAP_DISTANCE := 6.0
@@ -71,7 +72,7 @@ func server_broom_hit(point: Vector3, imad: PlayerBase) -> void:
 	if machine.state != STUNNED:
 		return
 	var near_aim := StationRules.flat_distance(point, position) <= float(Data.balance("broom_radius"))
-	var from_perch := RoachTargets.is_on_perch(imad) and StationRules.flat_distance(imad.global_position, position) <= PERCH_HIT_RANGE
+	var from_perch := RoachTargets.is_on_perch(imad) and StationRules.flat_distance(imad.global_position, position) <= float(Data.balance("roach_perch_hit_range"))
 	if not (near_aim or from_perch):
 		return
 	hits += 1
@@ -109,9 +110,11 @@ func _think(delta: float) -> void:
 			if machine.elapsed >= float(Data.balance("roach_stun")):
 				_set_state(CHASE)
 		FLEE:
-			_face(position + Vector3.FORWARD, delta)
-			position += Vector3.FORWARD * float(Data.balance("roach_chase_speed")) * FLEE_SPEED_MULT * delta
-			if machine.elapsed >= FLEE_SECONDS:
+			# Back to the nest in the south: the Dome is north, so it never crosses it.
+			_face(_spawn, delta)
+			var to_spawn := _flat(_spawn - position)
+			position += to_spawn.normalized() * float(Data.balance("roach_chase_speed")) * FLEE_SPEED_MULT * delta
+			if to_spawn.length() <= FLEE_ARRIVE_DISTANCE or machine.elapsed >= FLEE_SECONDS:
 				_set_state(GONE)
 
 

@@ -2,12 +2,9 @@ class_name AirSystem
 extends Node
 ## Host ticks team air: safe inside the Dome and active tower radii, drains if anyone is outside.
 
-## Pushing every frame would flood the reliable channel; one whole unit is enough for the bar.
-const PUSH_STEP := 1.0
-
 var _air: float
-var _pushed: float
 var _air_max: float
+var _sync_elapsed := 0.0
 
 
 func _init() -> void:
@@ -17,7 +14,6 @@ func _init() -> void:
 func _ready() -> void:
 	_air_max = Data.balance("air_max")
 	_air = _air_max
-	_pushed = _air
 
 
 func is_safe(point: Vector3) -> bool:
@@ -34,7 +30,6 @@ func is_safe(point: Vector3) -> bool:
 ## Host only.
 func damage(amount: float) -> void:
 	_air = maxf(_air - amount, 0.0)
-	_pushed = _air
 	TeamState.set_values({"air": _air})
 
 
@@ -51,16 +46,24 @@ func _process(delta: float) -> void:
 	if _air <= 0.0:
 		_out_of_air()
 		return
-	if absf(_air - _pushed) >= PUSH_STEP or (_air == _air_max and _pushed != _air_max):
-		_pushed = _air
-		TeamState.set_values({"air": _air})
+	_sync_elapsed += delta
+	if _sync_elapsed >= 1.0 / float(Data.balance("air_sync_hz")):
+		_sync_elapsed = 0.0
+		TeamState.apply_air(_air)
+		_rpc_air.rpc(_air)
+
+
+@rpc("authority", "call_remote", "unreliable")
+func _rpc_air(value: float) -> void:
+	TeamState.apply_air(value)
 
 
 func _out_of_air() -> void:
 	_air = _air_max
-	_pushed = _air_max
 	var imad_spawn := get_parent().get_node("Markers/imad") as Node3D
-	TeamState.commit(StationRules.out_of_air(TeamState.state, imad_spawn.global_position))
+	var body := Game.team_body()
+	var fall_point := body.global_position if body != null else imad_spawn.global_position
+	TeamState.commit(StationRules.out_of_air(TeamState.state, imad_spawn.global_position, fall_point))
 	_rpc_respawn.rpc()
 	var roach := get_parent().get_node_or_null("cockroach") as Cockroach
 	if roach != null:
@@ -76,4 +79,4 @@ func _rpc_respawn() -> void:
 		var marker := get_parent().get_node_or_null("Markers/%s" % player.name) as Node3D
 		if marker != null:
 			player.respawn(marker.global_position)
-	Game.show_message("Out of air. Back to the Dome.")
+	Game.show_message("Out of air. Back to the Dome. Your trash is where you fell.")

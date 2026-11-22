@@ -110,7 +110,8 @@ func _context_buttons() -> Array[Dictionary]:
 		if Game.world != null:
 			imad = Game.world.get_node_or_null("imad") as Imad
 		if imad != null and imad.bjorn_in_range:
-			result.append({"label": "Mount", "action": "mount"})
+			var label := "Climb down" if TeamState.state.get("on_perch", false) else "Mount"
+			result.append({"label": label, "action": "mount"})
 	return result
 
 
