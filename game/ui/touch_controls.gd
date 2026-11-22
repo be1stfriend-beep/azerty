@@ -12,11 +12,14 @@ const MARGIN := 70.0
 const FONT_SIZE := 34
 const ARC_POINTS := 48
 const MOVE_ACTIONS := {"x": ["move_left", "move_right"], "y": ["move_up", "move_down"]}
+## The rider steers the aim, not the body, with the same stick.
+const AIM_ACTIONS := {"x": ["aim_left", "aim_right"], "y": ["aim_up", "aim_down"]}
 
 var _buttons: Array[Dictionary] = []
 var _stick_index := -1
 var _stick_vector := Vector2.ZERO
 var _button_touches: Dictionary = {}
+var _stick_actions: Dictionary = MOVE_ACTIONS
 
 
 func _ready() -> void:
@@ -74,9 +77,9 @@ func _set_stick(pos: Vector2) -> void:
 
 
 func _apply_stick() -> void:
-	for axis: String in MOVE_ACTIONS:
+	for axis: String in _stick_actions:
 		var value := _stick_vector.x if axis == "x" else _stick_vector.y
-		var pair: Array = MOVE_ACTIONS[axis]
+		var pair: Array = _stick_actions[axis]
 		_press_strength(pair[0], maxf(-value, 0.0))
 		_press_strength(pair[1], maxf(value, 0.0))
 
@@ -91,10 +94,19 @@ func _press_strength(action: String, strength: float) -> void:
 ## Re-evaluated on every Events.context_changed.
 func _context_buttons() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
+	var merged := TeamState.mount_state() != MountController.SOLO
 	if Net.own_character() == Characters.Character.BJORN:
-		result = [{"label": "Jump", "action": "jump"}, {"label": "Kick", "action": "kick"}]
+		result = [{"label": "Jump", "action": "jump"}]
+		result.append({"label": "Dismount", "action": "dismount"} if merged else {"label": "Kick", "action": "kick"})
+	elif merged:
+		result = [{"label": "Use tool", "action": "use_tool"}, {"label": "Next tool", "action": "tool_next"}, {"label": "Dismount", "action": "dismount"}]
 	else:
 		result = [{"label": "Grab", "action": "grab"}, {"label": "Interact", "action": "interact"}]
+		var imad: Imad = null
+		if Game.world != null:
+			imad = Game.world.get_node_or_null("imad") as Imad
+		if imad != null and imad.bjorn_in_range:
+			result.append({"label": "Mount", "action": "mount"})
 	return result
 
 
@@ -102,6 +114,16 @@ func _refresh_buttons() -> void:
 	for index: int in _button_touches:
 		Input.action_release(_button_touches[index])
 	_button_touches.clear()
+	var rider := Net.own_character() == Characters.Character.IMAD and TeamState.mount_state() != MountController.SOLO
+	var next_actions: Dictionary = AIM_ACTIONS if rider else MOVE_ACTIONS
+	if next_actions != _stick_actions:
+		# Hand the held stick over to the new action set without lifting the finger.
+		var held := _stick_vector
+		_stick_vector = Vector2.ZERO
+		_apply_stick()
+		_stick_actions = next_actions
+		_stick_vector = held
+		_apply_stick()
 	_buttons = _context_buttons()
 	queue_redraw()
 

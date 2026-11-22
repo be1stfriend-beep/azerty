@@ -18,6 +18,8 @@ static func spawn(kind: String, id: String, params: Dictionary) -> Node3D:
 	node.name = id
 	node.set_meta("kind", kind)
 	node.set_meta("prefab", prefab_id)
+	if params.has("item"):
+		node.set_meta("item", params["item"])
 	var pos: Array = params.get("pos", [0, 0, 0])
 	node.position = Vector3(pos[0], pos[1], pos[2])
 	node.rotation_degrees.y = params.get("rot", 0.0)

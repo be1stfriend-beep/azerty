@@ -13,6 +13,7 @@ const STATE_GROUNDED := 1
 var character: int = Characters.Character.BJORN
 var move_speed: float = 0.0
 var rig: CharacterBuilder
+var collision_shape: CollisionShape3D
 
 var _gravity: float
 var _sync_interval: float
@@ -31,13 +32,13 @@ func _ready() -> void:
 	_gravity = Data.balance("gravity")
 	_sync_interval = 1.0 / float(Data.balance("sync_hz"))
 	_interp_lerp = Data.balance("interp_lerp")
-	var shape := CollisionShape3D.new()
+	collision_shape = CollisionShape3D.new()
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = _collider_radius()
 	capsule.height = _collider_height()
-	shape.shape = capsule
-	shape.position.y = capsule.height * 0.5
-	add_child(shape)
+	collision_shape.shape = capsule
+	collision_shape.position.y = capsule.height * 0.5
+	add_child(collision_shape)
 	rig = _build_rig()
 	add_child(rig)
 	_target_position = global_position
@@ -56,10 +57,11 @@ func _physics_process(delta: float) -> void:
 
 
 func _local_move(delta: float) -> void:
-	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	var input := _move_input()
 	var direction := Vector3(input.x, 0.0, input.y)
-	velocity.x = move_toward(velocity.x, direction.x * move_speed, ACCELERATION * delta)
-	velocity.z = move_toward(velocity.z, direction.z * move_speed, ACCELERATION * delta)
+	var speed := _current_speed()
+	velocity.x = move_toward(velocity.x, direction.x * speed, ACCELERATION * delta)
+	velocity.z = move_toward(velocity.z, direction.z * speed, ACCELERATION * delta)
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
 	_action_input(delta)
@@ -107,6 +109,20 @@ func _collider_radius() -> float:
 
 func _collider_height() -> float:
 	return 1.0
+
+
+func _move_input() -> Vector2:
+	return Input.get_vector("move_left", "move_right", "move_up", "move_down")
+
+
+func _current_speed() -> float:
+	return move_speed
+
+
+## Remotes stop interpolating toward a stale packet, e.g. after the rider was placed by the mount.
+func reset_remote_target() -> void:
+	_target_position = global_position
+	_target_velocity = velocity
 
 
 func _action_input(_delta: float) -> void:

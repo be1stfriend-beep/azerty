@@ -11,6 +11,7 @@ var world: Node3D
 
 var _lobby: Lobby
 var _overlay: MessageOverlay
+var _toast: Toast
 
 
 func _ready() -> void:
@@ -20,6 +21,8 @@ func _ready() -> void:
 	_lobby.hide()
 	add_child(_lobby)
 	add_child(NetMeter.new())
+	_toast = Toast.new()
+	add_child(_toast)
 	Net.connection_established.connect(_on_connection_established)
 	Net.partner_lost.connect(_on_partner_lost)
 
@@ -32,6 +35,10 @@ func _notification(what: int) -> void:
 
 func has_arg(flag: String) -> bool:
 	return flag in OS.get_cmdline_user_args() or flag in OS.get_cmdline_args()
+
+
+func show_message(text: String) -> void:
+	_toast.show_text(text)
 
 
 func show_lobby() -> void:
@@ -49,6 +56,8 @@ func _rpc_start_match(level_name: String) -> void:
 	_close_overlay()
 	_lobby.hide()
 	load_world(level_name)
+	# Sent after the start RPC on the same reliable channel, so the guest's world exists.
+	TeamState.reset()
 	_spawn_players()
 
 
@@ -60,6 +69,8 @@ func load_world(level_name: String) -> Node3D:
 
 ## Runs identically on both peers; each player node picks its own authority.
 func _spawn_players() -> void:
+	world.add_child(MountController.new())
+	world.add_child(TrashHider.new())
 	var own: PlayerBase
 	var other: PlayerBase
 	for player: PlayerBase in [Bjorn.new(), Imad.new()]:
@@ -83,6 +94,7 @@ func _spawn_players() -> void:
 
 func return_to_lobby() -> void:
 	_clear_world()
+	TeamState.clear()
 	_close_overlay()
 	Net.leave()
 	show_lobby()
