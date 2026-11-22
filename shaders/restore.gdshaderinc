@@ -7,6 +7,8 @@ global uniform float restore_1;
 global uniform float restore_2;
 global uniform float restore_3;
 
+// BRIEF: a soft 4 m edge inside each tower radius.
+const float RESTORE_EDGE = 4.0;
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 
 float tower_weight(vec4 tower, float amount, vec3 p) {
@@ -14,7 +16,8 @@ float tower_weight(vec4 tower, float amount, vec3 p) {
 		return 0.0;
 	}
 	float d = distance(p.xz, tower.xz);
-	return (1.0 - smoothstep(tower.w * 0.8, tower.w, d)) * amount;
+	// Equals smoothstep(radius, radius - EDGE, d); GLSL leaves reversed edges undefined.
+	return (1.0 - smoothstep(tower.w - RESTORE_EDGE, tower.w, d)) * amount;
 }
 
 float restoration(vec3 p) {

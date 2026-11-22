@@ -36,6 +36,8 @@ func _start_dev_level() -> void:
 	camera.position = position_and_target[0]
 	camera.look_at(position_and_target[1])
 	camera.make_current()
+	if Game.has_arg("--restore"):
+		_restore_dev_tower()
 
 
 ## --cam x,y,z,tx,ty,tz places the dev camera; anything malformed keeps the default view.
@@ -51,8 +53,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
 	if key == null or not key.pressed or key.echo or key.physical_keycode != KEY_T:
 		return
-	var tower := get_node_or_null("World/Entities/tower_%d" % DEV_TOWER_INDEX) as Node3D
-	if tower == null:
-		return
-	Style.set_tower(DEV_TOWER_INDEX, tower.global_position, Data.balance("tower_radius"))
-	Style.restore(DEV_TOWER_INDEX)
+	_restore_dev_tower()
+
+
+## --restore does the same as pressing T, so screenshots can show the restored state.
+func _restore_dev_tower() -> void:
+	var tower := get_node_or_null("World/Entities/tower_%d" % DEV_TOWER_INDEX) as Tower
+	if tower != null:
+		tower.restore_colour()

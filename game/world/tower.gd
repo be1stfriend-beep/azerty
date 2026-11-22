@@ -1,6 +1,8 @@
+class_name Tower
 extends Interactable
 ## Imad holds interact here for tower_hold_seconds with a Filter in the inventory.
-## The host tracks the hold; activation restores colour on every peer.
+## The host tracks the hold. Colour follows the replicated "towers" list, so both peers
+## and a late joiner restore from the same state rather than from a one-shot RPC.
 
 const PROGRESS_PUSH_STEP := 0.05
 
@@ -9,10 +11,18 @@ var index: int = 0
 var _holding := false
 var _elapsed := 0.0
 var _pushed := 0.0
+var _restored := false
+var _ring: MeshInstance3D
 
 
 func _ready() -> void:
 	index = int(String(name).get_slice("_", 1))
+	_ring = LevelLoader.ground_ring(float(Data.balance("tower_radius")), "tower_ring")
+	_ring.name = "RadiusRing"
+	_ring.visible = false
+	add_child(_ring)
+	# No check here: every new world receives a fresh state push after it loads.
+	Events.state_changed.connect(_on_state_changed)
 
 
 func interact(_player: PlayerBase) -> void:
@@ -55,7 +65,6 @@ func _process(delta: float) -> void:
 		_holding = false
 		_pushed = 0.0
 		TeamState.commit(StationRules.activate_tower(TeamState.state, index))
-		_rpc_activated.rpc()
 	elif progress - _pushed >= PROGRESS_PUSH_STEP:
 		_pushed = progress
 		TeamState.set_values({"hold_progress": progress})
@@ -69,8 +78,17 @@ func _cancel() -> void:
 	TeamState.set_values({"hold_progress": 0.0, "holding": ""})
 
 
-@rpc("authority", "call_local", "reliable")
-func _rpc_activated() -> void:
+func _on_state_changed() -> void:
+	if is_active():
+		restore_colour()
+
+
+## Local only: idempotent, so repeated state pushes restart nothing.
+func restore_colour() -> void:
+	if _restored:
+		return
+	_restored = true
+	_ring.visible = true
 	Style.set_tower(index, global_position, Data.balance("tower_radius"))
 	Style.restore(index)
 	Events.tower_activated.emit(index)

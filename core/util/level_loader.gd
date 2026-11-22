@@ -39,7 +39,10 @@ static func load_level(level_name: String, parent: Node) -> Node3D:
 		var center: Array = level["dome"]
 		var dome := Vector3(center[0], center[1], center[2])
 		world.set_meta("dome", dome)
-		world.add_child(_dome_ring(dome))
+		var ring := ground_ring(Data.balance("dome_radius"), "bone")
+		ring.name = "DomeRing"
+		ring.position = dome
+		world.add_child(ring)
 	return world
 
 
@@ -60,19 +63,17 @@ static func _ground() -> StaticBody3D:
 	return body
 
 
-static func _dome_ring(center: Vector3) -> MeshInstance3D:
-	var radius: float = Data.balance("dome_radius")
+## A thin flat ring lying on the ground, centred on its parent.
+static func ground_ring(radius: float, tint_group: String) -> MeshInstance3D:
 	var mesh := TorusMesh.new()
 	mesh.inner_radius = radius - RING_WIDTH * 0.5
 	mesh.outer_radius = radius + RING_WIDTH * 0.5
 	mesh.rings = RING_SEGMENTS
 	mesh.ring_segments = 6
 	var ring := MeshInstance3D.new()
-	ring.name = "DomeRing"
 	ring.mesh = mesh
-	ring.position = center
 	ring.scale = Vector3(1, RING_FLATTEN, 1)
-	ring.set_meta("tint_group", "bone")
+	ring.set_meta("tint_group", tint_group)
 	Style.apply(ring)
 	return ring
 
