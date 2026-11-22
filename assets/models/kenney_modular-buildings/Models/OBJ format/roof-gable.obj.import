@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://f3pf5d6eptxw"
+path="res://.godot/imported/roof-gable.obj-1457f862485b83ed411e9b400c651eff.mesh"
+
+[deps]
+
+files=["res://.godot/imported/roof-gable.obj-1457f862485b83ed411e9b400c651eff.mesh"]
+
+source_file="res://assets/models/kenney_modular-buildings/Models/OBJ format/roof-gable.obj"
+dest_files=["res://.godot/imported/roof-gable.obj-1457f862485b83ed411e9b400c651eff.mesh", "res://.godot/imported/roof-gable.obj-1457f862485b83ed411e9b400c651eff.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

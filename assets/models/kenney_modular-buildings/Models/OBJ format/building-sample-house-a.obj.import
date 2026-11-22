@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bxf5msy8nrusx"
+path="res://.godot/imported/building-sample-house-a.obj-5b86e19b1cdb25cb2b82ae7a164c5663.mesh"
+
+[deps]
+
+files=["res://.godot/imported/building-sample-house-a.obj-5b86e19b1cdb25cb2b82ae7a164c5663.mesh"]
+
+source_file="res://assets/models/kenney_modular-buildings/Models/OBJ format/building-sample-house-a.obj"
+dest_files=["res://.godot/imported/building-sample-house-a.obj-5b86e19b1cdb25cb2b82ae7a164c5663.mesh", "res://.godot/imported/building-sample-house-a.obj-5b86e19b1cdb25cb2b82ae7a164c5663.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

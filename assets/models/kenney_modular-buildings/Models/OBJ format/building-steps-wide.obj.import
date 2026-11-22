@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://wwbdymfhkas1"
+path="res://.godot/imported/building-steps-wide.obj-5d04b11b72c6212b6f3b43f6faa5d9d9.mesh"
+
+[deps]
+
+files=["res://.godot/imported/building-steps-wide.obj-5d04b11b72c6212b6f3b43f6faa5d9d9.mesh"]
+
+source_file="res://assets/models/kenney_modular-buildings/Models/OBJ format/building-steps-wide.obj"
+dest_files=["res://.godot/imported/building-steps-wide.obj-5d04b11b72c6212b6f3b43f6faa5d9d9.mesh", "res://.godot/imported/building-steps-wide.obj-5d04b11b72c6212b6f3b43f6faa5d9d9.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
