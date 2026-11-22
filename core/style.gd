@@ -3,6 +3,7 @@ extends Node
 const TOWER_SLOTS := 4
 const WORLD_SHADER_PATH := "res://shaders/world_style.gdshader"
 const GROUND_SHADER_PATH := "res://shaders/ground.gdshader"
+const CHARACTER_RIM := 0.9
 
 var _materials: Dictionary = {}
 var _ground: ShaderMaterial
@@ -24,6 +25,9 @@ func material(tint_group: String) -> ShaderMaterial:
 		var mat := ShaderMaterial.new()
 		mat.shader = load(WORLD_SHADER_PATH)
 		mat.set_shader_parameter("tint", Palette.tint(tint_group))
+		if tint_group in Palette.CHARACTER_GROUPS:
+			mat.set_shader_parameter("character", 1.0)
+			mat.set_shader_parameter("rim_strength", CHARACTER_RIM)
 		_materials[tint_group] = mat
 	return _materials[tint_group]
 

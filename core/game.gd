@@ -4,8 +4,8 @@ extends Node
 const VIGNETTE_SHADER_PATH := "res://shaders/vignette.gdshader"
 ## Above the 3D view, below the lobby, overlays and meter.
 const POST_LAYER := 5
-const OVERVIEW_CAMERA_POSITION := Vector3(0, 24, 26)
-const OVERVIEW_CAMERA_TARGET := Vector3(0, 0, 10)
+## Above the post layer, below the lobby.
+const TOUCH_LAYER := 8
 
 var world: Node3D
 
@@ -49,17 +49,36 @@ func _rpc_start_match(level_name: String) -> void:
 	_close_overlay()
 	_lobby.hide()
 	load_world(level_name)
+	_spawn_players()
 
 
 func load_world(level_name: String) -> Node3D:
 	_clear_world()
 	world = LevelLoader.load_level(level_name, get_tree().current_scene)
-	var camera := Camera3D.new()
-	world.add_child(camera)
-	camera.position = OVERVIEW_CAMERA_POSITION
-	camera.look_at(OVERVIEW_CAMERA_TARGET)
-	camera.make_current()
 	return world
+
+
+## Runs identically on both peers; each player node picks its own authority.
+func _spawn_players() -> void:
+	var own: PlayerBase
+	var other: PlayerBase
+	for player: PlayerBase in [Bjorn.new(), Imad.new()]:
+		var marker := world.get_node_or_null("Markers/%s" % player.name) as Node3D
+		if marker != null:
+			player.position = marker.position
+		world.add_child(player)
+		if player.character == Net.own_character():
+			own = player
+		else:
+			other = player
+	var camera := FollowCamera.new()
+	world.add_child(camera)
+	camera.setup(own, other)
+	if DisplayServer.is_touchscreen_available() or has_arg("--touch"):
+		var layer := CanvasLayer.new()
+		layer.layer = TOUCH_LAYER
+		layer.add_child(TouchControls.new())
+		world.add_child(layer)
 
 
 func return_to_lobby() -> void:

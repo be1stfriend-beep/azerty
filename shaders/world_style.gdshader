@@ -5,6 +5,8 @@ shader_type spatial;
 uniform vec4 tint : source_color = vec4(1.0);
 uniform sampler2D albedo_tex : source_color, hint_default_white;
 uniform float rim_strength = 0.5;
+// Characters keep their saturated colours so they pop against the dusty world.
+uniform float character = 0.0;
 
 varying vec3 world_pos;
 
@@ -14,7 +16,8 @@ void vertex() {
 
 void fragment() {
 	vec3 base = tint.rgb * texture(albedo_tex, UV).rgb;
-	ALBEDO = mix(dusty(base), lush(base), restoration(world_pos));
+	vec3 world_col = mix(dusty(base), lush(base), restoration(world_pos));
+	ALBEDO = mix(world_col, base, character);
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;
 }
