@@ -71,5 +71,5 @@
 	"fog_tone_drift": 0.05,
 	"fog_ambient_tint": 0.6,
 	"roach_guard_wake_distance": 18,
-	"slice_work_after_hunt": 6
+	"slice_end_delay": 4
 }

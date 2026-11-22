@@ -105,7 +105,7 @@ func _collect_outside_trash() -> void:
 
 
 ## Back inside, the roach must stop at the ring, give up and walk back to guard its lair. The
-## card waits until the team has scavenged slice_work_after_hunt more pieces and come home.
+## card waits until the team has crafted a Filter and lit the tower with it.
 func _return_to_dome() -> void:
 	_respawn_home()
 	var roach := Game.world.get_node("cockroach") as Cockroach
@@ -118,22 +118,35 @@ func _return_to_dome() -> void:
 	var kept_out := closest > float(Data.balance("dome_radius"))
 	_check("roach_guards_lair", roach.machine.state == Cockroach.GUARD and roach.visible and kept_out, "roach %s, closest to Dome %.1f m" % [roach.machine.state, closest])
 	await _wait_for(func() -> bool: return TeamState.state.get("hunt", "") == SliceHunt.HUNT_DONE, STEP_TIMEOUT)
-	_check("slice_waits_for_work", not TeamState.state.get("slice_complete", false), "completed before any work")
-	# The hunt load fills the bag, so empty it before scavenging again.
-	_place_imad_at("recycler_0")
-	TeamState._server_recycle("recycler_0", _imad_id)
-	await _wait_for(func() -> bool: return (TeamState.state["carried"] as Array).is_empty(), STEP_TIMEOUT * 2.0)
+	_check("slice_waits_for_tower", not TeamState.state.get("slice_complete", false), "completed before the tower")
+	var filter := Data.recipe(Objective.TOWER_RECIPE)
 	var imad := Game.player(Characters.Character.IMAD)
-	for trash in _free_trash(float(Data.balance("dome_radius")), OUTSIDE_PICK_MAX * 2.0):
-		if SliceHunt.work_left() == 0:
+	await _empty_bag()
+	for trash in _free_trash(float(Data.balance("dome_radius")), OUTSIDE_PICK_MAX * 3.0):
+		if StationRules.can_afford(TeamState.state["stash"], filter):
 			break
 		imad.respawn(trash.global_position + PICKUP_OFFSET)
 		TeamState._server_use_tool(trash.global_position, _imad_id)
 		await get_tree().process_frame
-	_respawn_home()
-	var done := await _wait_for(func() -> bool: return TeamState.state.get("slice_complete", false), STEP_TIMEOUT)
+		if (TeamState.state["carried"] as Array).size() >= int(Data.balance("carry_capacity")):
+			await _empty_bag()
+	await _empty_bag()
+	_place_imad_at("bench_0")
+	TeamState._server_craft(Objective.TOWER_RECIPE, _imad_id)
+	_check("craft_filter", int((TeamState.state["inventory"] as Dictionary).get(Objective.TOWER_RECIPE, 0)) > 0, "stash %s" % TeamState.state["stash"])
+	_place_imad_at("tower_0")
+	TeamState._server_hold("tower_0", true, _imad_id)
+	var lit := await _wait_for(SliceHunt.tower_lit, float(Data.balance("tower_hold_seconds")) + STEP_TIMEOUT)
+	_check("tower_lit", lit, "towers %s, hold %s" % [TeamState.state.get("towers", []), TeamState.state.get("hold_progress", 0.0)])
+	var done := await _wait_for(func() -> bool: return TeamState.state.get("slice_complete", false), float(Data.balance("slice_end_delay")) + STEP_TIMEOUT)
 	var hunt := Game.world.get_node("SliceHunt") as SliceHunt
 	_check("slice_complete", done and hunt._card != null, "hunt '%s', complete %s" % [TeamState.state.get("hunt", ""), TeamState.state.get("slice_complete", false)])
+
+
+func _empty_bag() -> void:
+	_place_imad_at("recycler_0")
+	TeamState._server_recycle("recycler_0", _imad_id)
+	await _wait_for(func() -> bool: return (TeamState.state["carried"] as Array).is_empty(), STEP_TIMEOUT * 2.0)
 
 
 func _respawn_home() -> void:

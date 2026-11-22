@@ -5,6 +5,7 @@ class_name Objective
 
 const HUNTING_STATES: Array[String] = [Cockroach.CHASE, Cockroach.WINDUP, Cockroach.CHARGE]
 const SLICE_RECIPE := "mask"
+const TOWER_RECIPE := "filter"
 
 
 static func text() -> String:
@@ -14,8 +15,7 @@ static func text() -> String:
 	if _roach_hunting():
 		return Data.hint("objective_flee")
 	if state.get("hunt", SliceHunt.HUNT_NONE) == SliceHunt.HUNT_DONE:
-		var left := SliceHunt.work_left()
-		return Data.hint("objective_work") % left if left > 0 else Data.hint("objective_home")
+		return _tower_step(state)
 	if _bin_near_own_bjorn():
 		return Data.hint("objective_kick_bin")
 	if int((state.get("inventory", {}) as Dictionary).get(SLICE_RECIPE, 0)) > 0:
@@ -26,6 +26,17 @@ static func text() -> String:
 	if carried >= mini(int(Data.balance("objective_recycle_at")), int(Data.balance("carry_capacity"))):
 		return Data.hint("objective_recycle")
 	return Data.hint("objective_collect")
+
+
+## After the hunt: gather for a Filter, craft it, then light the tower in the dead forest.
+static func _tower_step(state: Dictionary) -> String:
+	if SliceHunt.tower_lit():
+		return Data.hint("objective_tower_lit")
+	if int((state.get("inventory", {}) as Dictionary).get(TOWER_RECIPE, 0)) > 0:
+		return Data.hint("objective_tower")
+	if StationRules.can_afford(state.get("stash", {}), Data.recipe(TOWER_RECIPE)):
+		return Data.hint("objective_craft_filter")
+	return Data.hint("objective_filter")
 
 
 static func _bin_near_own_bjorn() -> bool:

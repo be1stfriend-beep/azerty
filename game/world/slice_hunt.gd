@@ -1,8 +1,8 @@
 class_name SliceHunt
 extends Node
 ## Slice only. The host starts the roach hunt once and closes it when the roach is back at
-## its lair. The team then keeps scavenging; once they have brought in enough more trash and
-## both are inside the Dome, the slice is complete. Both peers read the outcome from
+## its lair. The team then scavenges for a Filter and lights the purification tower; once
+## its colour has spread, the slice is complete. Both peers read the outcome from
 ## TeamState, so the card appears on both screens together.
 
 const HUNT_NONE := ""
@@ -19,7 +19,7 @@ const GROWL_VOLUME := 0.6
 const SAMPLE_MAX := 32767.0
 
 var _outside_picks := 0
-var _work_picks := 0
+var _lit_for := 0.0
 var _growl: AudioStreamPlayer
 var _card: MessageOverlay
 
@@ -36,7 +36,7 @@ func _ready() -> void:
 	Events.state_changed.connect(_on_state_changed)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var roach := get_parent().get_node_or_null("cockroach") as Cockroach
 	if not multiplayer.is_server() or TeamState.state.is_empty() or roach == null:
 		return
@@ -50,26 +50,23 @@ func _process(_delta: float) -> void:
 				_outside_picks = 0
 				TeamState.set_values({"hunt": HUNT_NONE})
 			elif roach.machine.state == Cockroach.GUARD:
-				TeamState.set_values({"hunt": HUNT_DONE, "work_picks": 0})
+				TeamState.set_values({"hunt": HUNT_DONE})
 		HUNT_DONE:
-			if not TeamState.state.get("slice_complete", false) and work_left() == 0 and _both_inside():
+			if TeamState.state.get("slice_complete", false) or not tower_lit():
+				return
+			# The card waits a moment so both players see the colour come back first.
+			_lit_for += delta
+			if _lit_for >= float(Data.balance("slice_end_delay")):
 				TeamState.set_values({"slice_complete": true})
 
 
-## Pieces of trash still to pick after the hunt before the slice can end. Read on both peers.
-static func work_left() -> int:
-	return maxi(int(Data.balance("slice_work_after_hunt")) - int(TeamState.state.get("work_picks", 0)), 0)
+## Read on both peers: the slice tower has been activated with a Filter.
+static func tower_lit() -> bool:
+	return not (TeamState.state.get("towers", []) as Array).is_empty()
 
 
 func _on_trash_picked(id: String) -> void:
-	if not multiplayer.is_server():
-		return
-	if TeamState.state.get("hunt", HUNT_NONE) == HUNT_DONE:
-		_work_picks += 1
-		# Deferred: this runs inside a state push.
-		TeamState.set_values.call_deferred({"work_picks": _work_picks})
-		return
-	if TeamState.state.get("hunt", HUNT_NONE) != HUNT_NONE:
+	if not multiplayer.is_server() or TeamState.state.get("hunt", HUNT_NONE) != HUNT_NONE:
 		return
 	var trash := get_parent().get_node_or_null("Entities/%s" % id) as Node3D
 	if trash == null or StationRules.flat_distance(trash.global_position, RoachTargets.dome_center()) <= float(Data.balance("dome_radius")):
@@ -113,11 +110,6 @@ func _anyone_beyond(distance: float) -> bool:
 		if StationRules.flat_distance(player.global_position, RoachTargets.dome_center()) > distance:
 			return true
 	return false
-
-
-func _both_inside() -> bool:
-	var players := RoachTargets.players()
-	return players.size() == 2 and not _anyone_beyond(float(Data.balance("dome_radius")))
 
 
 func _on_state_changed() -> void:
