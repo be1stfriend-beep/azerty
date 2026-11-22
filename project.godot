@@ -29,3 +29,38 @@ window/handheld/orientation=0
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+
+[shader_globals]
+
+tower_0={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+tower_1={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+tower_2={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+tower_3={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+restore_0={
+"type": "float",
+"value": 0.0
+}
+restore_1={
+"type": "float",
+"value": 0.0
+}
+restore_2={
+"type": "float",
+"value": 0.0
+}
+restore_3={
+"type": "float",
+"value": 0.0
+}
