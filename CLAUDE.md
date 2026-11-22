@@ -24,6 +24,7 @@ Read this file, then docs/BRIEF.md (always), then ONLY the prompt named in the t
 - Every visible mesh gets the style layer (`Style.apply`). Never ship default grey Godot materials.
 - Scripts under ~200 lines. Comments explain why, never what. No dead code, no TODO stubs.
 - No emoji in UI or code. Text and simple shapes only.
+- Never create a Godot project or a nested project folder. The project root is the folder you were started in.
 
 ## Networking (non-negotiable)
 - Listen server: the host is the server and also plays. `core/net.gd` already exists and is the base. Do not rewrite it; only fix real errors.
