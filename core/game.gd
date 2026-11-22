@@ -37,6 +37,16 @@ func has_arg(flag: String) -> bool:
 	return flag in OS.get_cmdline_user_args() or flag in OS.get_cmdline_args()
 
 
+## The argument that follows a flag, e.g. arg_after("--screenshot", 2) for its second value.
+func arg_after(flag: String, offset: int = 1) -> String:
+	var args := OS.get_cmdline_user_args()
+	args.append_array(OS.get_cmdline_args())
+	var index := args.find(flag)
+	if index == -1 or index + offset >= args.size():
+		return ""
+	return args[index + offset]
+
+
 func show_message(text: String) -> void:
 	_toast.show_text(text)
 
@@ -93,6 +103,11 @@ func start_match() -> void:
 	if not Net.is_host():
 		return
 	_rpc_start_match.rpc(Data.config().get("start_level", "main"))
+
+
+## Offline single-process match for the autotest: the same flow as a networked start.
+func start_local_match() -> void:
+	_rpc_start_match(Data.config().get("start_level", "main"))
 
 
 @rpc("authority", "call_local", "reliable")

@@ -11,16 +11,8 @@ var _ground: ShaderMaterial
 var _tweens: Dictionary = {}
 
 
-# Shaders are loaded lazily: compiling one before its globals exist is an error.
-func _ready() -> void:
-	var existing := RenderingServer.global_shader_parameter_get_list()
-	for i in TOWER_SLOTS:
-		if not existing.has(StringName("tower_%d" % i)):
-			RenderingServer.global_shader_parameter_add("tower_%d" % i, RenderingServer.GLOBAL_VAR_TYPE_VEC4, Vector4.ZERO)
-		if not existing.has(StringName("restore_%d" % i)):
-			RenderingServer.global_shader_parameter_add("restore_%d" % i, RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 0.0)
-
-
+## The tower_N / restore_N shader globals are declared in project.godot [shader_globals]:
+## adding them again at runtime errors, and listing them is editor-only.
 func material(tint_group: String) -> ShaderMaterial:
 	if not _materials.has(tint_group):
 		var mat := ShaderMaterial.new()
