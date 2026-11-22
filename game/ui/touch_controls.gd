@@ -116,9 +116,13 @@ func _context_buttons() -> Array[Dictionary]:
 
 
 func _refresh_buttons() -> void:
-	for index: int in _button_touches:
-		Input.action_release(_button_touches[index])
-	_button_touches.clear()
+	_buttons = _context_buttons()
+	# A held Interact must survive unrelated context changes (Bjorn walking past cancelled tower holds).
+	var still_shown: Array = _buttons.map(func(button: Dictionary) -> String: return button["action"])
+	for index: int in _button_touches.keys():
+		if not (_button_touches[index] in still_shown):
+			Input.action_release(_button_touches[index])
+			_button_touches.erase(index)
 	var rider := Net.own_character() == Characters.Character.IMAD and TeamState.mount_state() != MountController.SOLO
 	var next_actions: Dictionary = AIM_ACTIONS if rider else MOVE_ACTIONS
 	if next_actions != _stick_actions:
@@ -129,7 +133,6 @@ func _refresh_buttons() -> void:
 		_stick_actions = next_actions
 		_stick_vector = held
 		_apply_stick()
-	_buttons = _context_buttons()
 	queue_redraw()
 
 

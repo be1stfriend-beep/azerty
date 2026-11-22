@@ -15,8 +15,13 @@ const WORLD_MASK := 1
 const PERCH_HEIGHT := 2.5
 ## How close Bjorn's body must be to the perch to drop or collect the rider there.
 const PERCH_RANGE := 3.0
+## A transition lasting this many times its configured duration is treated as stuck.
+const WATCHDOG_FACTOR := 2.0
+
+var watchdog_fires := 0
 
 var _phase_left := 0.0
+var _stuck_for := 0.0
 var _cycles := 0
 
 
@@ -31,16 +36,51 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if not multiplayer.is_server() or _phase_left <= 0.0:
+	if not multiplayer.is_server():
+		return
+	_watch(delta)
+	if _phase_left <= 0.0:
 		return
 	_phase_left -= delta
-	if _phase_left > 0.0:
-		return
+	if _phase_left <= 0.0:
+		_finish_phase()
+
+
+func _finish_phase() -> void:
 	match TeamState.mount_state():
 		MOUNTING:
 			TeamState.set_values({"mount": MERGED})
 		DISMOUNTING:
 			TeamState.set_values({"mount": SOLO})
+
+
+## Host safety net: a transition whose timer was lost (knockout, restart, missed request) would
+## lock Bjorn's input forever, so it is pushed to its next state.
+func _watch(delta: float) -> void:
+	var mount := TeamState.mount_state()
+	var limit := _phase_time(mount) * WATCHDOG_FACTOR
+	if limit <= 0.0:
+		_stuck_for = 0.0
+		return
+	_stuck_for += delta
+	if _stuck_for <= limit:
+		return
+	watchdog_fires += 1
+	var message := "forced %s on after %.1f s (%d)" % [mount, _stuck_for, watchdog_fires]
+	print("mount watchdog: %s" % message)
+	NetMeter.set_line("mount watchdog", message)
+	_stuck_for = 0.0
+	_phase_left = 0.0
+	_finish_phase()
+
+
+func _phase_time(mount: String) -> float:
+	match mount:
+		MOUNTING:
+			return float(Data.balance("mount_time"))
+		DISMOUNTING:
+			return float(Data.balance("dismount_time"))
+	return 0.0
 
 
 func can_mount(imad: Node3D, bjorn: Node3D) -> bool:
@@ -100,8 +140,10 @@ func _server_dismount(sender: int) -> void:
 		return
 	var drop: Variant = _free_drop(bjorn)
 	if drop == null:
-		Game.tell(sender, "No room to climb down here")
-		return
+		# Refusing here could keep the pair merged forever in a tight spot; overlap is recoverable.
+		drop = bjorn.global_position - _flat_forward(bjorn) * DROP_DISTANCE
+		print("mount: no free drop spot, placing the rider behind Bjorn at %s" % drop)
+		NetMeter.set_line("mount fallback drop", str(drop))
 	_phase_left = Data.balance("dismount_time")
 	TeamState.set_values({"mount": DISMOUNTING, "dismount_pos": drop})
 
@@ -113,14 +155,19 @@ func _free_drop(bjorn: Node3D) -> Variant:
 	var query := PhysicsShapeQueryParameters3D.new()
 	query.shape = probe
 	query.collision_mask = WORLD_MASK
-	var forward := bjorn.global_basis.z
-	forward.y = 0.0
+	var forward := _flat_forward(bjorn)
 	for angle in DROP_ANGLES:
-		var spot := bjorn.global_position + forward.normalized().rotated(Vector3.UP, deg_to_rad(angle)) * DROP_DISTANCE
+		var spot := bjorn.global_position + forward.rotated(Vector3.UP, deg_to_rad(angle)) * DROP_DISTANCE
 		query.transform = Transform3D(Basis.IDENTITY, spot + Vector3.UP * DROP_PROBE_HEIGHT)
 		if space.intersect_shape(query, 1).is_empty():
 			return spot
 	return null
+
+
+func _flat_forward(bjorn: Node3D) -> Vector3:
+	var forward := bjorn.global_basis.z
+	forward.y = 0.0
+	return forward.normalized()
 
 
 func _perch() -> Node3D:
@@ -137,6 +184,7 @@ func _player(player_name: String) -> Node3D:
 
 
 func _on_mount_changed(mount: String) -> void:
+	_stuck_for = 0.0
 	if mount == SOLO:
 		_cycles += 1
 		NetMeter.set_line("mount cycles", str(_cycles))
