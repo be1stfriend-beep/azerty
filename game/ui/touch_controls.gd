@@ -11,6 +11,7 @@ const BUTTON_GAP := 36.0
 const MARGIN := 70.0
 const FONT_SIZE := 34
 const ARC_POINTS := 48
+const BUTTON_COLUMNS := 2
 const MOVE_ACTIONS := {"x": ["move_left", "move_right"], "y": ["move_up", "move_down"]}
 ## The rider steers the aim, not the body, with the same stick.
 const AIM_ACTIONS := {"x": ["aim_left", "aim_right"], "y": ["aim_up", "aim_down"]}
@@ -135,9 +136,12 @@ func _stick_center() -> Vector2:
 	return Vector2(MARGIN + STICK_RADIUS, size.y - MARGIN - STICK_RADIUS)
 
 
+## Two columns in the bottom-right corner keep clear of the bottom-centre HUD and dialogue.
 func _button_center(i: int) -> Vector2:
 	var step := BUTTON_RADIUS * 2.0 + BUTTON_GAP
-	return Vector2(size.x - MARGIN - BUTTON_RADIUS - i * step, size.y - MARGIN - BUTTON_RADIUS)
+	var column := i % BUTTON_COLUMNS
+	var row := i / BUTTON_COLUMNS
+	return Vector2(size.x - MARGIN - BUTTON_RADIUS - column * step, size.y - MARGIN - BUTTON_RADIUS - row * step)
 
 
 func _draw() -> void:

@@ -8,7 +8,6 @@ const DEV_CAMERA_TARGET := Vector3(0, 0, 10)
 func _ready() -> void:
 	if not Data.is_loaded:
 		await Data.data_loaded
-	print("Data loaded")
 	if Game.has_arg("--dev-level"):
 		_start_dev_level()
 	elif not (Game.has_arg("--host") or Game.has_arg("--join")):

@@ -1,7 +1,6 @@
 extends Node
 ## Match flow: lobby, start on both peers, return to lobby, partner lost.
 
-const VIGNETTE_SHADER_PATH := "res://shaders/vignette.gdshader"
 ## Above the 3D view, below the lobby, overlays and meter.
 const POST_LAYER := 5
 ## Above the post layer, below the lobby.
@@ -17,7 +16,7 @@ var _craft_menu: CraftMenu
 
 func _ready() -> void:
 	InputSetup.register()
-	_add_post_layer()
+	Style.add_post_layer(self, POST_LAYER)
 	_lobby = Lobby.new()
 	_lobby.hide()
 	add_child(_lobby)
@@ -53,6 +52,18 @@ func tell(peer: int, text: String) -> void:
 @rpc("authority", "call_remote", "reliable")
 func _rpc_message(text: String) -> void:
 	show_message(text)
+
+
+func show_end_card() -> void:
+	_close_overlay()
+	if Net.is_host():
+		_overlay = MessageOverlay.new("To be continued", "Restart")
+		_overlay.confirmed.connect(start_match)
+	else:
+		_overlay = MessageOverlay.new("To be continued
+The host can restart", "Back to lobby")
+		_overlay.confirmed.connect(return_to_lobby)
+	add_child(_overlay)
 
 
 func show_craft_menu() -> void:
@@ -111,6 +122,9 @@ func _spawn_players() -> void:
 		roach.position = roach_marker.position
 	world.add_child(roach)
 	world.add_child(Hud.new())
+	var dialogue := DialogueBox.new()
+	world.add_child(dialogue)
+	world.add_child(Story.new(dialogue))
 	_craft_menu = CraftMenu.new()
 	world.add_child(_craft_menu)
 	var own: PlayerBase
@@ -160,28 +174,16 @@ func _on_partner_lost() -> void:
 func _clear_world() -> void:
 	if world == null:
 		return
-	# Detach now so a new World can take the same node name in this frame.
-	world.get_parent().remove_child(world)
-	world.queue_free()
+	# Freed at once (never from inside a world node's callback) so no stale node in it
+	# reacts to the next match's first state push, and the new World can take its name.
+	world.free()
 	world = null
+	for action: String in InputSetup.KEYS:
+		Input.action_release(action)
+	Style.reset_towers()
 
 
 func _close_overlay() -> void:
 	if _overlay != null:
 		_overlay.queue_free()
 		_overlay = null
-
-
-func _add_post_layer() -> void:
-	var layer := CanvasLayer.new()
-	layer.name = "PostLayer"
-	layer.layer = POST_LAYER
-	var rect := ColorRect.new()
-	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var mat := ShaderMaterial.new()
-	mat.shader = load(VIGNETTE_SHADER_PATH)
-	mat.set_shader_parameter("haze_color", Palette.HAZE_SKY)
-	rect.material = mat
-	layer.add_child(rect)
-	add_child(layer)

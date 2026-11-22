@@ -4,6 +4,7 @@ const TOWER_SLOTS := 4
 const WORLD_SHADER_PATH := "res://shaders/world_style.gdshader"
 const GROUND_SHADER_PATH := "res://shaders/ground.gdshader"
 const CHARACTER_RIM := 0.9
+const VIGNETTE_SHADER_PATH := "res://shaders/vignette.gdshader"
 
 var _materials: Dictionary = {}
 var _ground: ShaderMaterial
@@ -52,6 +53,34 @@ func apply(node: Node, inherited_group: String = "concrete") -> void:
 
 func set_tower(index: int, position: Vector3, radius: float) -> void:
 	RenderingServer.global_shader_parameter_set("tower_%d" % index, Vector4(position.x, position.y, position.z, radius))
+
+
+## A new match starts with every tower dusty again.
+func reset_towers() -> void:
+	for index: int in _tweens:
+		var tween: Tween = _tweens[index]
+		if tween.is_valid():
+			tween.kill()
+	_tweens.clear()
+	for i in TOWER_SLOTS:
+		set_tower(i, Vector3.ZERO, 0.0)
+		_set_restore(0.0, i)
+
+
+## The single vignette and warm haze over the 3D view.
+func add_post_layer(parent: Node, layer_index: int) -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "PostLayer"
+	layer.layer = layer_index
+	var rect := ColorRect.new()
+	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mat := ShaderMaterial.new()
+	mat.shader = load(VIGNETTE_SHADER_PATH)
+	mat.set_shader_parameter("haze_color", Palette.HAZE_SKY)
+	rect.material = mat
+	layer.add_child(rect)
+	parent.add_child(layer)
 
 
 ## Local only: callers run this on every peer.
