@@ -1,24 +1,1019 @@
 {
-	"trash_bottle": {"model": null, "tint_group": "plastic"},
-	"trash_can": {"model": null, "tint_group": "metal"},
-	"trash_cardboard": {"model": null, "tint_group": "paper"},
-	"trash_apple_core": {"model": null, "tint_group": "compost"},
-	"trash_plank": {"model": null, "tint_group": "wood"},
-	"prop_barrel": {"model": null, "tint_group": "rust"},
-	"prop_crate": {"model": null, "tint_group": "wood"},
-	"prop_tyre": {"model": null, "tint_group": "soot"},
-	"prop_pipe": {"model": null, "tint_group": "rust"},
-	"prop_scrap_tower": {"model": null, "tint_group": "rust"},
-	"pillar": {"model": null, "tint_group": "concrete"},
-	"perch": {"model": null, "tint_group": "wood"},
-	"gate": {"model": null, "tint_group": "rust"},
-	"recycler": {"model": null, "tint_group": "teal"},
-	"bench": {"model": null, "tint_group": "wood"},
-	"tower": {"model": null, "tint_group": "concrete"},
-	"plate": {"model": null, "tint_group": "danger"},
-	"door": {"model": null, "tint_group": "rust"},
-	"prop_fence": {"model": null, "tint_group": "rust"},
-	"prop_ledge": {"model": null, "tint_group": "wood", "height": 1.1},
-	"bin": {"model": null, "tint_group": "metal"},
-	"vent": {"model": null, "tint_group": "soot"}
+	"trash_bottle": {
+		"model": "res://assets/models/Garbage/EmptyBottle.fbx",
+		"scale": 10.0,
+		"tint_group": "plastic"
+	},
+	"trash_can": {
+		"model": "res://assets/models/Garbage/Lata.fbx",
+		"scale": 16.0,
+		"tint_group": "metal"
+	},
+	"trash_cardboard": {
+		"model": "res://assets/models/Garbage/StripedBox.fbx",
+		"scale": 1.8,
+		"tint_group": "paper"
+	},
+	"trash_apple_core": {
+		"model": "res://assets/models/Garbage/RottenApple.fbx",
+		"scale": 5.0,
+		"tint_group": "compost"
+	},
+	"trash_plank": {
+		"model": "res://assets/models/kenney_nature-kit/Models/FBX format/log.fbx",
+		"scale": 2.2,
+		"tint_group": "wood"
+	},
+	"prop_barrel": {
+		"model": "res://assets/models/Garbage/MetalTrashcan.fbx",
+		"scale": 24.0,
+		"tint_group": "rust"
+	},
+	"prop_crate": {
+		"model": "res://assets/models/Garbage/Box&Bottles.fbx",
+		"scale": 8.0,
+		"tint_group": "wood"
+	},
+	"prop_tyre": {
+		"model": null,
+		"tint_group": "soot"
+	},
+	"prop_pipe": {
+		"model": null,
+		"tint_group": "rust"
+	},
+	"prop_scrap_tower": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/water-tower.glb",
+		"scale": 3.5,
+		"tint_group": "rust"
+	},
+	"pillar": {
+		"model": null,
+		"tint_group": "concrete"
+	},
+	"perch": {
+		"model": null,
+		"tint_group": "wood"
+	},
+	"gate": {
+		"model": null,
+		"tint_group": "rust"
+	},
+	"recycler": {
+		"model": null,
+		"tint_group": "teal"
+	},
+	"bench": {
+		"model": null,
+		"tint_group": "wood"
+	},
+	"tower": {
+		"model": null,
+		"tint_group": "concrete"
+	},
+	"plate": {
+		"model": null,
+		"tint_group": "danger"
+	},
+	"door": {
+		"model": null,
+		"tint_group": "rust"
+	},
+	"prop_fence": {
+		"model": null,
+		"tint_group": "rust"
+	},
+	"prop_ledge": {
+		"model": null,
+		"tint_group": "wood",
+		"height": 1.1
+	},
+	"bin": {
+		"model": null,
+		"tint_group": "metal"
+	},
+	"vent": {
+		"model": null,
+		"tint_group": "soot"
+	},
+	"model_nature_bush_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_bush_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_bush_02": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_bush_02.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_bush_03": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_bush_03.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_bush_04": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_bush_04.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_bush_05": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_bush_05.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_bush_06": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_bush_06.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_flower_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_flower_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_flower_02": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_flower_02.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_flower_03": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_flower_03.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_flower_04": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_flower_04.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_grass_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_grass_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_grass_02": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_grass_02.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_grass_03": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_grass_03.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_grass_04": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_grass_04.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_grass_05": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_grass_05.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_grass_06": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_grass_06.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_log_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_log_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_log_02": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_log_02.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_rock_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_rock_02": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_02.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_rock_03": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_03.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_rock_04": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_04.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_rock_05": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_05.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_rock_06": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_06.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_rock_07": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_07.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_rock_08": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_08.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_stump_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_stump_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_stump_02": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_stump_02.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_terrain_dirt": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_terrain_dirt.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_terrain_flat": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_terrain_flat.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_terrain_hill": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_terrain_hill.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_terrain_rocky": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_terrain_rocky.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_tree_dead_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_dead_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_tree_deciduous_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_deciduous_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_tree_deciduous_02": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_deciduous_02.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_tree_deciduous_03": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_deciduous_03.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_tree_palm_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_palm_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_tree_pine_01": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_pine_01.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_tree_pine_02": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_pine_02.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_nature_tree_pine_03": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_pine_03.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_a": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-a.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_b": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-b.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_c": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-c.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_d": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-d.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_e": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-e.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_f": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-f.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_g": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-g.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_h": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-h.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_i": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-i.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_j": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-j.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_k": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-k.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_l": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-l.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_m": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-m.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_n": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-n.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_o": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-o.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_p": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-p.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_q": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-q.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_r": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-r.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_s": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-s.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_t": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-t.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_chimney_basic": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/chimney-basic.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_chimney_large": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/chimney-large.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_chimney_medium": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/chimney-medium.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_chimney_small": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/chimney-small.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_detail_tank_large": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/detail-tank-large.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_detail_tank": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/detail-tank.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_shipping_container_a": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/shipping-container-a.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_shipping_container_b": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/shipping-container-b.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_shipping_container_c": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/shipping-container-c.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_solar_panel_flat": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/solar-panel-flat.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_solar_panel_landscape_group": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/solar-panel-landscape-group.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_solar_panel_landscape": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/solar-panel-landscape.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_solar_panel_portrait_group": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/solar-panel-portrait-group.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_solar_panel_portrait": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/solar-panel-portrait.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_windmill_low": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/windmill-low.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_windmill": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/windmill.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_block": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-block.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner_bottom": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner-bottom.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner_top": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner-top.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner_window_middle": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner-window-middle.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner_window_narrow": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner-window-narrow.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner_window_sill": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner-window-sill.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner_window_top_round": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner-window-top-round.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner_window_top_square": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner-window-top-square.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner_window": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner-window.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_corner": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-corner.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_door_window_narrow": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-door-window-narrow.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_door_window": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-door-window.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_door": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-door.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_edges_door": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-edges-door.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_sample_house_a": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-sample-house-a.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_sample_house_b": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-sample-house-b.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_sample_house_c": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-sample-house-c.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_sample_tower_a": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-sample-tower-a.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_sample_tower_b": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-sample-tower-b.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_sample_tower_c": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-sample-tower-c.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_sample_tower_d": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-sample-tower-d.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_steps_narrow_windows_round": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-steps-narrow-windows-round.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_steps_narrow_windows": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-steps-narrow-windows.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_steps_narrow": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-steps-narrow.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_steps_wide": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-steps-wide.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_awnings": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-awnings.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_balcony": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-balcony.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_door_window_round": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-door-window-round.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_door_window": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-door-window.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_large_left": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-large-left.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_large_middle": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-large-middle.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_large_right": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-large-right.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_large": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-large.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_left_sill": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-left-sill.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_left": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-left.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_right_sill": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-right-sill.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_right": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-right.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_sill": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-sill.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_wide_sill": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-wide-sill.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window_wide": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window-wide.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_window": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-window.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_windows_high_middle": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-windows-high-middle.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_windows_high_top_round": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-windows-high-top-round.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_windows_high_top_square": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-windows-high-top-square.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_windows_round": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-windows-round.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_windows_sills_round": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-windows-sills-round.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_windows_sills": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-windows-sills.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_building_windows": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/building-windows.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_detail_ac_a": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/detail-ac-a.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_detail_ac_b": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/detail-ac-b.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_door_brown_glass": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/door-brown-glass.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_door_brown_window": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/door-brown-window.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_door_brown": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/door-brown.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_door_white_glass": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/door-white-glass.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_door_white_window": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/door-white-window.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_door_white": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/door-white.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_awning_a": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-awning-a.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_awning_b": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-awning-b.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_awning_c": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-awning-c.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_border_center_corner": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-border-center-corner.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_border_center": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-border-center.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_border_corner_slanted_passage": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-border-corner-slanted-passage.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_border_corner_slanted": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-border-corner-slanted.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_border_corner": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-border-corner.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_border_end": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-border-end.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_border_side": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-border-side.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_border_straight": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-border-straight.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_center": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-center.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_corner_high": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-corner-high.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_corner": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-corner.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_detail_a": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-detail-a.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_detail_b": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-detail-b.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_detail_c": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-detail-c.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_detail_d": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-detail-d.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_flat_top": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-flat-top.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_gable_corner": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-gable-corner.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_gable_end": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-gable-end.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_gable": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-gable.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_slanted_corner_a": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-slanted-corner-a.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_slanted_corner_b": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-slanted-corner-b.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_slanted_corner_c": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-slanted-corner-c.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_slanted_corner_inner": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-slanted-corner-inner.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_slanted_detail": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-slanted-detail.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_slanted_flat": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-slanted-flat.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_slanted_window": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-slanted-window.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_roof_slanted": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/roof-slanted.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_detailed": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-detailed.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_large": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-large.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_narrow": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-narrow.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_round_low": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-round-low.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_round_middle": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-round-middle.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_round_narrow": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-round-narrow.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_round_top": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-round-top.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_round_wide": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-round-wide.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_tall": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-tall.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown_wide": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown-wide.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_brown": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-brown.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_detailed": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-detailed.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_large": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-large.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_narrow": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-narrow.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_round_low": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-round-low.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_round_middle": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-round-middle.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_round_narrow": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-round-narrow.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_round_top": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-round-top.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_round_wide": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-round-wide.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_tall": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-tall.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white_wide": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white-wide.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	},
+	"model_window_white": {
+		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white.glb",
+		"scale": 1.0,
+		"tint_group": "concrete"
+	}
 }

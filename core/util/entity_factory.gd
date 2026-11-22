@@ -12,6 +12,7 @@ static func spawn(kind: String, id: String, params: Dictionary) -> Node3D:
 		node = ProcProps.build(prefab_id)
 	else:
 		node.set_meta("tint_group", prefab.get("tint_group", "concrete"))
+		_copy_fallback_collision(node, prefab_id)
 	Style.apply(node)
 	if node.has_meta("collision"):
 		node.add_child(_collider(node.get_meta("collision")))
@@ -66,10 +67,51 @@ static func _from_model(prefab: Dictionary) -> Node3D:
 	var scene := load(path) as PackedScene
 	if scene == null:
 		return null
-	var node := scene.instantiate() as Node3D
-	if node != null:
-		node.scale = Vector3.ONE * float(prefab.get("scale", 1.0))
-	return node
+	var model := scene.instantiate() as Node3D
+	if model == null:
+		return null
+	_strip_collision(model)
+	model.scale = Vector3.ONE * float(prefab.get("scale", 1.0))
+	# Packs disagree on pivots: put every model's bottom centre on the entity origin, like the procedural props.
+	var bounds := _mesh_bounds(model, model.transform)
+	model.position = -Vector3(bounds.get_center().x, bounds.position.y, bounds.get_center().z)
+	var root := Node3D.new()
+	root.add_child(model)
+	return root
+
+
+## Gameplay collision always comes from the procedural fallback's metadata, so a model swap never changes how a prop blocks.
+static func _copy_fallback_collision(node: Node3D, prefab_id: String) -> void:
+	var fallback := ProcProps.build(prefab_id)
+	if fallback.has_meta("collision"):
+		node.set_meta("collision", fallback.get_meta("collision"))
+	fallback.free()
+
+
+static func _strip_collision(node: Node) -> void:
+	for child in node.get_children():
+		if child is CollisionObject3D:
+			node.remove_child(child)
+			child.free()
+		else:
+			_strip_collision(child)
+
+
+static func _mesh_bounds(node: Node, xf: Transform3D) -> AABB:
+	var bounds := AABB()
+	var found := false
+	if node is MeshInstance3D and (node as MeshInstance3D).mesh != null:
+		bounds = xf * (node as MeshInstance3D).mesh.get_aabb()
+		found = true
+	for child in node.get_children():
+		if not child is Node3D:
+			continue
+		var child_bounds := _mesh_bounds(child, xf * (child as Node3D).transform)
+		if child_bounds.size == Vector3.ZERO:
+			continue
+		bounds = child_bounds if not found else bounds.merge(child_bounds)
+		found = true
+	return bounds
 
 
 static func _collider(info: Dictionary) -> StaticBody3D:
