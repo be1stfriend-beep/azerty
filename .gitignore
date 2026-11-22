@@ -2,3 +2,4 @@
 builds/
 *.apk
 *.aab
+local.env

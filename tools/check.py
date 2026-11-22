@@ -1,8 +1,9 @@
 """One-shot project check: boot, data validation, autotest. Prints one summary line."""
-import os
 import subprocess
 import sys
 from pathlib import Path
+
+import local_env
 
 ROOT = Path(__file__).resolve().parent.parent
 BOOT_FRAMES = "120"
@@ -26,10 +27,11 @@ def engine_errors(output: str) -> list[str]:
 
 
 def main() -> int:
-    godot = os.environ.get("GODOT_BIN")
-    if not godot or not Path(godot).exists():
-        print("check: GODOT_BIN is not set to an existing Godot executable")
+    godot = local_env.godot_bin()
+    if not godot:
+        print("check: GODOT_BIN is not set to an existing Godot executable (see local.env.example)")
         return 1
+    local_env.ensure_imported(godot)
     parts: list[str] = []
     ok = True
 

@@ -1,8 +1,9 @@
 """Launch two Godot instances side by side: a host and a guest on 127.0.0.1."""
-import os
 import subprocess
 import sys
 from pathlib import Path
+
+import local_env
 
 ROOT = Path(__file__).resolve().parent.parent
 SIZE = "960x540"
@@ -13,10 +14,11 @@ INSTANCES = [
 
 
 def main() -> int:
-    godot = os.environ.get("GODOT_BIN")
-    if not godot or not Path(godot).exists():
-        print("Set GODOT_BIN to the Godot 4.7 executable.")
+    godot = local_env.godot_bin()
+    if not godot:
+        print("Set GODOT_BIN to the Godot 4.7 executable in local.env (copy local.env.example).")
         return 1
+    local_env.ensure_imported(godot)
     extra = sys.argv[1:]
     processes = []
     for position, user_args in INSTANCES:

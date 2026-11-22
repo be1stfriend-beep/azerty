@@ -6,6 +6,13 @@
 - Both devices must be on the same Wi-Fi network (or the same phone hotspot).
 - Login screen: type a name, then "Host as Bjorn" / "Host as Imad" on one device and "Join" on the other.
 
+## Setting up on a new PC (after git clone)
+1. Install Godot **4.7.2** and Python 3.
+2. Copy `local.env.example` to `local.env` and set `GODOT_BIN` (and `ANDROID_HOME` for phone builds).
+   `local.env` is gitignored, so each PC keeps its own paths. A real `GODOT_BIN` environment variable overrides it.
+3. Run `python tools/run_two.py`. The first run imports the assets once (the `.godot/` cache is not in git).
+   Opening the project in the Godot editor does the same import.
+
 ## Test on PC (no phone needed)
 ```
 python tools/run_two.py
@@ -55,7 +62,7 @@ Network checklist (do these once):
 ## Troubleshooting
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| Cannot connect at all | Wrong IP, or different networks | Use the IP shown on the host's Network panel; both on the samem Wi-Fi |
+| Cannot connect at all | Wrong IP, or different networks | Use the IP shown on the host's Network panel; both on the same Wi-Fi |
 | Timeout message after Join | Firewall, Public profile, client isolation, mobile data | Add the firewall rule, set Private, turn isolation and mobile data off, try a phone hotspot |
 | Joins only when the PC is the client | PC firewall blocks inbound UDP 7777 | Add the firewall rule (admin PowerShell) |
 | App crashes at start | APK built with a different Godot version or missing data | Rebuild with `python tools/build_android.py`; check `adb logcat -s godot` |

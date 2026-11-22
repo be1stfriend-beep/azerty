@@ -10,6 +10,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import local_env
+
 ROOT = Path(__file__).resolve().parent.parent
 PRESET = "Android"
 APK = ROOT / "builds" / "piggyback-debug.apk"
@@ -56,6 +58,7 @@ def find_adb() -> str:
     on_path = shutil.which("adb")
     if on_path:
         return on_path
+    local_env.load()
     roots = [os.environ.get("ANDROID_HOME", ""), os.environ.get("ANDROID_SDK_ROOT", ""), editor_sdk_path(),
              str(Path(os.environ.get("LOCALAPPDATA", "")) / "Android" / "Sdk")]
     for root in roots:
@@ -66,9 +69,10 @@ def find_adb() -> str:
 
 
 def export_apk() -> None:
-    godot = os.environ.get("GODOT_BIN", "")
-    if not godot or not Path(godot).exists():
-        raise BuildError("GODOT_BIN is not set to the Godot 4.7.2 executable.")
+    godot = local_env.godot_bin()
+    if not godot:
+        raise BuildError("GODOT_BIN is not set to the Godot 4.7.2 executable (see local.env.example).")
+    local_env.ensure_imported(godot)
     APK.parent.mkdir(parents=True, exist_ok=True)
     if APK.exists():
         APK.unlink()
