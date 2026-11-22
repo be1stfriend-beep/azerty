@@ -5,6 +5,8 @@
 	"objective_outside": "Go outside and find more trash",
 	"objective_flee": "Get back to the Dome!",
 	"objective_complete": "Slice complete",
+	"objective_work": "The bug went back to its lair. Keep scavenging: %d more",
+	"objective_home": "Good haul. Head back to the Dome",
 	"objective_kick_bin": "Kick the bin, Bjorn",
 	"hunt_warning": "Something big is coming. Run to the Dome!",
 	"slice_card": "THE BUG GAVE UP. Mask invented. Next: the Filter.",

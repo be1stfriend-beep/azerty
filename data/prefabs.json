@@ -1272,5 +1272,38 @@
 			0.5,
 			0.5
 		]
+	},
+	"prop_tree": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_deciduous_01.glb",
+		"fit_height": 4.2,
+		"tint_group": "compost",
+		"solid": false,
+		"fallback_size": [
+			1.6,
+			4.2,
+			1.6
+		]
+	},
+	"prop_tree_round": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_deciduous_02.glb",
+		"fit_height": 3.6,
+		"tint_group": "compost",
+		"solid": false,
+		"fallback_size": [
+			1.6,
+			3.6,
+			1.6
+		]
+	},
+	"prop_pine": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_pine_01.glb",
+		"fit_height": 5.0,
+		"tint_group": "compost",
+		"solid": false,
+		"fallback_size": [
+			1.4,
+			5.0,
+			1.4
+		]
 	}
 }

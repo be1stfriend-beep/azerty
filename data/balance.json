@@ -2,7 +2,7 @@
 	"bjorn_walk": 5.0,
 	"bjorn_jump": 7.5,
 	"gravity": 22.0,
-	"imad_crawl": 2.4,
+	"imad_crawl": 1.7,
 	"merged_speed": 5.0,
 	"merged_jump_mult": 0.7,
 	"mount_range": 2.5,
@@ -55,7 +55,6 @@
 	"air_drain_mask_mult": 0.6,
 	"hunt_trigger_distance": 45,
 	"roach_hunt_spawn_distance": 22,
-	"roach_flee_remove_seconds": 4,
 	"objective_recycle_at": 3,
 	"mask_gate_push": 0.5,
 	"mask_gate_message_seconds": 5,
@@ -64,9 +63,13 @@
 	"fog_clear_begin": 20,
 	"fog_clear_end": 80,
 	"fog_clear_density": 0.5,
-	"fog_smog_begin": -3,
-	"fog_smog_end": 11,
+	"fog_smog_begin": -4,
+	"fog_smog_end": 8,
 	"fog_smog_density": 1.0,
 	"fog_blend_distance": 8,
-	"fog_lerp": 2.5
+	"fog_lerp": 2.5,
+	"fog_tone_drift": 0.05,
+	"fog_ambient_tint": 0.6,
+	"roach_guard_wake_distance": 18,
+	"slice_work_after_hunt": 6
 }

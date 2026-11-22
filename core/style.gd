@@ -34,7 +34,13 @@ func ground_material() -> ShaderMaterial:
 		_ground.shader = load(GROUND_SHADER_PATH)
 		_ground.set_shader_parameter("dust_color", Palette.DUST_GROUND)
 		_ground.set_shader_parameter("grass_color", Palette.RESTORED_GRASS)
+		_ground.set_shader_parameter("soil_color", Palette.DOME_SOIL)
 	return _ground
+
+
+## Zero radius turns the Dome's green soil off, for levels without a Dome.
+func set_dome(center: Vector3, radius: float) -> void:
+	RenderingServer.global_shader_parameter_set("dome_area", Vector4(center.x, center.y, center.z, radius))
 
 
 ## Meshes without their own tint_group inherit the nearest ancestor's.

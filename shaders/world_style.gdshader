@@ -18,7 +18,7 @@ void vertex() {
 
 void fragment() {
 	vec3 base = tint.rgb * texture(albedo_tex, UV).rgb * mix(vec3(1.0), COLOR.rgb, use_vertex_color);
-	vec3 world_col = mix(dusty(base), lush(base), restoration(world_pos));
+	vec3 world_col = mix(dusty(base), lush(base), liveliness(world_pos));
 	ALBEDO = mix(world_col, base, character);
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;

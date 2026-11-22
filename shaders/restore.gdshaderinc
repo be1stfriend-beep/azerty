@@ -6,9 +6,14 @@ global uniform float restore_0;
 global uniform float restore_1;
 global uniform float restore_2;
 global uniform float restore_3;
+// xyz centre, w radius; zero radius means the level has no Dome.
+global uniform vec4 dome_area;
 
 // BRIEF: a soft 4 m edge inside each tower radius.
 const float RESTORE_EDGE = 4.0;
+const float DOME_EDGE = 2.5;
+// The Dome's clean air keeps things alive, but only towers bring back full colour.
+const float DOME_LIFE = 0.6;
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 
 float tower_weight(vec4 tower, float amount, vec3 p) {
@@ -24,6 +29,17 @@ float restoration(vec3 p) {
 	float a = max(tower_weight(tower_0, restore_0, p), tower_weight(tower_1, restore_1, p));
 	float b = max(tower_weight(tower_2, restore_2, p), tower_weight(tower_3, restore_3, p));
 	return max(a, b);
+}
+
+float dome_weight(vec3 p) {
+	if (dome_area.w <= 0.0) {
+		return 0.0;
+	}
+	return 1.0 - smoothstep(dome_area.w - DOME_EDGE, dome_area.w, distance(p.xz, dome_area.xz));
+}
+
+float liveliness(vec3 p) {
+	return max(restoration(p), dome_weight(p) * DOME_LIFE);
 }
 
 vec3 dusty(vec3 c) {

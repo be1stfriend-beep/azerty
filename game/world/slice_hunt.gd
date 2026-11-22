@@ -1,8 +1,9 @@
 class_name SliceHunt
 extends Node
-## Slice only. The host starts the roach hunt once, closes it when the roach is gone, and
-## declares the slice complete once both are back inside the Dome. Both peers read the
-## outcome from TeamState, so the card appears on both screens together.
+## Slice only. The host starts the roach hunt once and closes it when the roach is back at
+## its lair. The team then keeps scavenging; once they have brought in enough more trash and
+## both are inside the Dome, the slice is complete. Both peers read the outcome from
+## TeamState, so the card appears on both screens together.
 
 const HUNT_NONE := ""
 const HUNTING := "on"
@@ -18,6 +19,7 @@ const GROWL_VOLUME := 0.6
 const SAMPLE_MAX := 32767.0
 
 var _outside_picks := 0
+var _work_picks := 0
 var _growl: AudioStreamPlayer
 var _card: MessageOverlay
 
@@ -47,15 +49,27 @@ func _process(_delta: float) -> void:
 			if roach.machine.state == Cockroach.IDLE:
 				_outside_picks = 0
 				TeamState.set_values({"hunt": HUNT_NONE})
-			elif roach.machine.state == Cockroach.GONE:
-				TeamState.set_values({"hunt": HUNT_DONE})
+			elif roach.machine.state == Cockroach.GUARD:
+				TeamState.set_values({"hunt": HUNT_DONE, "work_picks": 0})
 		HUNT_DONE:
-			if not TeamState.state.get("slice_complete", false) and _both_inside():
+			if not TeamState.state.get("slice_complete", false) and work_left() == 0 and _both_inside():
 				TeamState.set_values({"slice_complete": true})
 
 
+## Pieces of trash still to pick after the hunt before the slice can end. Read on both peers.
+static func work_left() -> int:
+	return maxi(int(Data.balance("slice_work_after_hunt")) - int(TeamState.state.get("work_picks", 0)), 0)
+
+
 func _on_trash_picked(id: String) -> void:
-	if not multiplayer.is_server() or TeamState.state.get("hunt", HUNT_NONE) != HUNT_NONE:
+	if not multiplayer.is_server():
+		return
+	if TeamState.state.get("hunt", HUNT_NONE) == HUNT_DONE:
+		_work_picks += 1
+		# Deferred: this runs inside a state push.
+		TeamState.set_values.call_deferred({"work_picks": _work_picks})
+		return
+	if TeamState.state.get("hunt", HUNT_NONE) != HUNT_NONE:
 		return
 	var trash := get_parent().get_node_or_null("Entities/%s" % id) as Node3D
 	if trash == null or StationRules.flat_distance(trash.global_position, RoachTargets.dome_center()) <= float(Data.balance("dome_radius")):

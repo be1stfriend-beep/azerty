@@ -9,6 +9,8 @@ const CHARGE := "Charge"
 const STUNNED := "Stunned"
 const FLEE := "Flee"
 const GONE := "Gone"
+## Slice: after giving up it sits at its lair and only wakes for players who come close.
+const GUARD := "Guard"
 
 const WINDUP_DISTANCE := 7.0
 const BODY_RADIUS := 1.4
@@ -24,13 +26,18 @@ const SNAP_DISTANCE := 6.0
 const AWAKE_STATES: Array[String] = [CHASE, WINDUP, CHARGE, STUNNED]
 ## How close to the Dome ring counts as "at the edge" for the give-up roar.
 const EDGE_TOLERANCE := 0.5
+## How far past the ring the way home starts bending around the Dome.
+const DOME_STEER_GAP := 3.0
 
 var machine := StateMachine.new(IDLE)
 var hp := 0
-## Slice: hidden and asleep until SliceHunt sends it; gives up at the Dome edge.
+## Slice: hidden and asleep until SliceHunt sends it; gives up at the Dome edge, then guards its lair.
 var hunt_only := false
 
 var _spawn := Vector3.ZERO
+var _lair := Vector3.ZERO
+## Host: set once the first hunt ends; from then on every flee and knockout ends at the lair.
+var _guarding := false
 var _charge_dir := Vector3.FORWARD
 var _rig: RoachBuilder
 var _sync_elapsed := 0.0
@@ -45,6 +52,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	_spawn = position
+	_lair = position
 	_target_position = position
 	hp = int(Data.balance("roach_hp"))
 	_rig = RoachBuilder.build()
@@ -71,8 +79,13 @@ func reset() -> void:
 	if machine.state == GONE:
 		return
 	hp = int(Data.balance("roach_hp"))
-	position = _spawn
-	_set_state(IDLE)
+	# Once it has given up a hunt, a knockout sends it home instead of restarting the hunt.
+	if _guarding:
+		position = _lair
+		_set_state(GUARD)
+	else:
+		position = _spawn
+		_set_state(IDLE)
 	_refresh_bar()
 
 
@@ -163,13 +176,22 @@ func _think(delta: float) -> void:
 			if machine.elapsed >= float(Data.balance("roach_stun")):
 				_set_state(CHASE)
 		FLEE:
-			# Back to the nest in the south: the Dome is north, so it never crosses it.
-			_face(_spawn, delta)
-			var to_spawn := _flat(_spawn - position)
-			position += to_spawn.normalized() * float(Data.balance("roach_chase_speed")) * FLEE_SPEED_MULT * delta
-			var limit := float(Data.balance("roach_flee_remove_seconds")) if hunt_only else FLEE_SECONDS
-			if to_spawn.length() <= FLEE_ARRIVE_DISTANCE or machine.elapsed >= limit:
+			# Level: the nest is south of the Dome. Slice: the lair may lie behind it, so it walks around.
+			var home := _lair if hunt_only else _spawn
+			var to_home := _flat(home - position)
+			var heading := _around_dome(to_home.normalized()) if hunt_only else to_home.normalized()
+			_face(position + heading, delta)
+			position += heading * float(Data.balance("roach_chase_speed")) * FLEE_SPEED_MULT * delta
+			if hunt_only:
+				if to_home.length() <= FLEE_ARRIVE_DISTANCE:
+					_guarding = true
+					hp = int(Data.balance("roach_hp"))
+					_set_state(GUARD)
+			elif to_home.length() <= FLEE_ARRIVE_DISTANCE or machine.elapsed >= FLEE_SECONDS:
 				_set_state(GONE)
+		GUARD:
+			if target != null and StationRules.flat_distance(target.global_position, _lair) <= float(Data.balance("roach_guard_wake_distance")):
+				_set_state(CHASE)
 	position = RoachTargets.outside_dome(position, BODY_RADIUS)
 
 
@@ -181,6 +203,18 @@ func _approach_dome_edge(delta: float) -> void:
 	position += to_center.normalized() * float(Data.balance("roach_chase_speed")) * delta
 	if to_center.length() <= float(Data.balance("dome_radius")) + BODY_RADIUS + EDGE_TOLERANCE:
 		_set_state(WINDUP)
+
+
+## The way home may lie across the Dome: near the ring it walks along the edge instead.
+func _around_dome(dir: Vector3) -> Vector3:
+	var out := _flat(position - RoachTargets.dome_center())
+	if out.length() > float(Data.balance("dome_radius")) + BODY_RADIUS + DOME_STEER_GAP or dir.dot(out) >= 0.0:
+		return dir
+	out = out.normalized()
+	var tangent := dir - out * dir.dot(out)
+	if tangent.length() < 0.01:
+		tangent = out.cross(Vector3.UP)
+	return tangent.normalized()
 
 
 func _check_charge_hits() -> void:
@@ -277,6 +311,8 @@ func _on_local_state_changed(state: String) -> void:
 		position = _spawn
 		_target_position = _spawn
 		visible = not hunt_only
+	if state == GUARD:
+		show()
 	if state == GONE:
 		hide()
 		Gate.open(Game.world)

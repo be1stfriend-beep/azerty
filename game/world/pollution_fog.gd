@@ -33,9 +33,21 @@ func _process(delta: float) -> void:
 	_env.fog_depth_begin = maxf(0.0, depth + _mix("fog_clear_begin", "fog_smog_begin"))
 	_env.fog_depth_end = depth + _mix("fog_clear_end", "fog_smog_end")
 	_env.fog_density = _mix("fog_clear_density", "fog_smog_density")
-	var color := Palette.HAZE_SKY.lerp(Palette.SMOG, _outside)
+	var color := Palette.HAZE_SKY.lerp(_smog_tone(focus - dome), _outside)
 	_env.fog_light_color = color
 	_env.background_color = color
+	_env.ambient_light_color = Palette.HAZE_SKY.lerp(color, _outside * float(Data.balance("fog_ambient_tint")))
+
+
+## Each side of the wasteland has its own tone, and the tones slowly drift around the Dome,
+## so walking or waiting both change the colour of the air.
+func _smog_tone(offset: Vector3) -> Color:
+	var tones := Palette.SMOG_TONES
+	var seconds := Time.get_ticks_msec() / 1000.0
+	var phase := atan2(offset.x, offset.z) / TAU * tones.size() + seconds * float(Data.balance("fog_tone_drift"))
+	var index := posmod(floori(phase), tones.size())
+	var weight := smoothstep(0.0, 1.0, phase - floorf(phase))
+	return tones[index].lerp(tones[(index + 1) % tones.size()], weight)
 
 
 func _mix(clear_key: String, smog_key: String) -> float:

@@ -104,22 +104,41 @@ func _collect_outside_trash() -> void:
 	_check("hunt_triggers", hunting and roach.visible and roach.machine.state == Cockroach.CHASE and behind, "hunt '%s', roach %s at %s" % [TeamState.state.get("hunt", ""), roach.machine.state, roach.global_position])
 
 
-## Back inside, the roach must stop at the ring, give up, vanish, and the card must follow.
+## Back inside, the roach must stop at the ring, give up and walk back to guard its lair. The
+## card waits until the team has scavenged slice_work_after_hunt more pieces and come home.
 func _return_to_dome() -> void:
-	for player in RoachTargets.players():
-		player.respawn((Game.world.get_node("Markers/%s" % player.name) as Node3D).global_position)
+	_respawn_home()
 	var roach := Game.world.get_node("cockroach") as Cockroach
 	var closest := INF
 	var left := RETURN_TIMEOUT
-	while left > 0.0 and roach.machine.state != Cockroach.GONE:
+	while left > 0.0 and roach.machine.state != Cockroach.GUARD:
 		closest = minf(closest, StationRules.flat_distance(roach.global_position, RoachTargets.dome_center()))
 		await get_tree().process_frame
 		left -= get_process_delta_time()
 	var kept_out := closest > float(Data.balance("dome_radius"))
-	_check("roach_stops_at_dome", roach.machine.state == Cockroach.GONE and kept_out, "roach %s, closest to Dome %.1f m" % [roach.machine.state, closest])
+	_check("roach_guards_lair", roach.machine.state == Cockroach.GUARD and roach.visible and kept_out, "roach %s, closest to Dome %.1f m" % [roach.machine.state, closest])
+	await _wait_for(func() -> bool: return TeamState.state.get("hunt", "") == SliceHunt.HUNT_DONE, STEP_TIMEOUT)
+	_check("slice_waits_for_work", not TeamState.state.get("slice_complete", false), "completed before any work")
+	# The hunt load fills the bag, so empty it before scavenging again.
+	_place_imad_at("recycler_0")
+	TeamState._server_recycle("recycler_0", _imad_id)
+	await _wait_for(func() -> bool: return (TeamState.state["carried"] as Array).is_empty(), STEP_TIMEOUT * 2.0)
+	var imad := Game.player(Characters.Character.IMAD)
+	for trash in _free_trash(float(Data.balance("dome_radius")), OUTSIDE_PICK_MAX * 2.0):
+		if SliceHunt.work_left() == 0:
+			break
+		imad.respawn(trash.global_position + PICKUP_OFFSET)
+		TeamState._server_use_tool(trash.global_position, _imad_id)
+		await get_tree().process_frame
+	_respawn_home()
 	var done := await _wait_for(func() -> bool: return TeamState.state.get("slice_complete", false), STEP_TIMEOUT)
 	var hunt := Game.world.get_node("SliceHunt") as SliceHunt
 	_check("slice_complete", done and hunt._card != null, "hunt '%s', complete %s" % [TeamState.state.get("hunt", ""), TeamState.state.get("slice_complete", false)])
+
+
+func _respawn_home() -> void:
+	for player in RoachTargets.players():
+		player.respawn((Game.world.get_node("Markers/%s" % player.name) as Node3D).global_position)
 
 
 ## Unpicked trash whose flat distance from the Dome centre lies in (min_distance, max_distance].

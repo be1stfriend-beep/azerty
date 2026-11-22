@@ -4,6 +4,8 @@ shader_type spatial;
 
 uniform vec4 dust_color : source_color;
 uniform vec4 grass_color : source_color;
+uniform vec4 soil_color : source_color;
+uniform float soil_speckle_scale = 0.9;
 uniform float band_scale = 0.035;
 
 varying vec3 world_pos;
@@ -30,7 +32,11 @@ void fragment() {
 	float n = value_noise(p) * 0.65 + value_noise(p * 2.7 + 13.0) * 0.35;
 	// Quantised bands keep the ground in the same flat cel look as the props.
 	float shade = 0.88 + floor(n * 3.0) / 3.0 * 0.14;
-	vec3 col = mix(dust_color.rgb, grass_color.rgb, restoration(world_pos));
+	// Fine two-tone patches so the Dome soil reads as tilled earth with moss, not flat paint.
+	float speckle = step(0.55, value_noise(world_pos.xz * soil_speckle_scale));
+	vec3 soil = mix(soil_color.rgb, grass_color.rgb, speckle * 0.45);
+	vec3 col = mix(dust_color.rgb, soil, dome_weight(world_pos));
+	col = mix(col, grass_color.rgb, restoration(world_pos));
 	ALBEDO = col * shade;
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;

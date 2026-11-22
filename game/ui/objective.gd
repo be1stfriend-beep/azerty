@@ -13,6 +13,9 @@ static func text() -> String:
 		return Data.hint("objective_complete")
 	if _roach_hunting():
 		return Data.hint("objective_flee")
+	if state.get("hunt", SliceHunt.HUNT_NONE) == SliceHunt.HUNT_DONE:
+		var left := SliceHunt.work_left()
+		return Data.hint("objective_work") % left if left > 0 else Data.hint("objective_home")
 	if _bin_near_own_bjorn():
 		return Data.hint("objective_kick_bin")
 	if int((state.get("inventory", {}) as Dictionary).get(SLICE_RECIPE, 0)) > 0:

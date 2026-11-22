@@ -159,14 +159,16 @@ func _test_roach_flee() -> void:
 	var dome: Vector3 = Game.world.get_meta("dome", Vector3.ZERO)
 	roach.position = STUN_SPOT
 	roach._set_state(Cockroach.FLEE)
+	# The slice roach never leaves: it ends its flight guarding its lair.
+	var end_state := Cockroach.GUARD if roach.hunt_only else Cockroach.GONE
 	var closest := INF
 	var left := FLEE_TIMEOUT
-	while left > 0.0 and roach.machine.state != Cockroach.GONE:
+	while left > 0.0 and roach.machine.state != end_state:
 		closest = minf(closest, StationRules.flat_distance(roach.global_position, dome))
 		await get_tree().process_frame
 		left -= get_process_delta_time()
 	var outside_dome := closest > float(Data.balance("dome_radius"))
-	_check("roach_flee_avoids_dome", roach.machine.state == Cockroach.GONE and outside_dome, "state %s, closest to Dome %.1f m" % [roach.machine.state, closest])
+	_check("roach_flee_avoids_dome", roach.machine.state == end_state and outside_dome, "state %s, closest to Dome %.1f m" % [roach.machine.state, closest])
 	var gate_body: StaticBody3D = null
 	for child in Game.world.get_node("Entities/gate_0").get_children():
 		if child is StaticBody3D:
