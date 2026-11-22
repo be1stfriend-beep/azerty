@@ -1,8 +1,8 @@
 {
 	"trash": {"prefab_from": "item"},
-	"recycler": {"prefab": "recycler"},
-	"bench": {"prefab": "bench"},
-	"tower": {"prefab": "tower"},
+	"recycler": {"prefab": "recycler", "script": "res://game/world/recycler.gd", "range": 3.0},
+	"bench": {"prefab": "bench", "script": "res://game/world/bench.gd", "range": 3.0},
+	"tower": {"prefab": "tower", "script": "res://game/world/tower.gd", "range": 3.0},
 	"pillar": {"prefab": "pillar"},
 	"perch": {"prefab": "perch"},
 	"gate": {"prefab": "gate"},

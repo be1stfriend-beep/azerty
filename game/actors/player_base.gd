@@ -119,6 +119,12 @@ func _current_speed() -> float:
 	return move_speed
 
 
+func respawn(pos: Vector3) -> void:
+	global_position = pos
+	velocity = Vector3.ZERO
+	reset_remote_target()
+
+
 ## Remotes stop interpolating toward a stale packet, e.g. after the rider was placed by the mount.
 func reset_remote_target() -> void:
 	_target_position = global_position

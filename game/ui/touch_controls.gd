@@ -99,7 +99,10 @@ func _context_buttons() -> Array[Dictionary]:
 		result = [{"label": "Jump", "action": "jump"}]
 		result.append({"label": "Dismount", "action": "dismount"} if merged else {"label": "Kick", "action": "kick"})
 	elif merged:
-		result = [{"label": "Use tool", "action": "use_tool"}, {"label": "Next tool", "action": "tool_next"}, {"label": "Dismount", "action": "dismount"}]
+		result = [
+			{"label": "Use tool", "action": "use_tool"}, {"label": "Interact", "action": "interact"},
+			{"label": "Next tool", "action": "tool_next"}, {"label": "Dismount", "action": "dismount"},
+		]
 	else:
 		result = [{"label": "Grab", "action": "grab"}, {"label": "Interact", "action": "interact"}]
 		var imad: Imad = null

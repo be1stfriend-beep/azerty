@@ -37,7 +37,9 @@ static func load_level(level_name: String, parent: Node) -> Node3D:
 		markers.add_child(marker)
 	if level.has("dome"):
 		var center: Array = level["dome"]
-		world.add_child(_dome_ring(Vector3(center[0], center[1], center[2])))
+		var dome := Vector3(center[0], center[1], center[2])
+		world.set_meta("dome", dome)
+		world.add_child(_dome_ring(dome))
 	return world
 
 

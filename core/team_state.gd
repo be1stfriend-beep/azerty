@@ -1,6 +1,6 @@
 extends Node
-## Host-owned shared state. The host mutates a copy, then pushes the whole dictionary.
-## Clients only receive it.
+## Host-owned shared state. The host builds the next dictionary, then pushes all of it.
+## Clients only receive it. Rules live in StationRules and MountController.
 
 var state: Dictionary = {}
 
@@ -9,16 +9,10 @@ func reset() -> void:
 	if not multiplayer.is_server():
 		return
 	_commit({
-		"carried": [],
-		"stash": {},
-		"tools": ["tongs"],
-		"current_tool": "tongs",
-		"inventory": {},
-		"picked": [],
-		"towers": [],
-		"mount": MountController.SOLO,
-		"dismount_pos": Vector3.ZERO,
-		"air": float(Data.balance("air_max")),
+		"carried": [], "stash": {}, "tools": ["tongs"], "current_tool": "tongs",
+		"inventory": {}, "picked": [], "towers": [],
+		"mount": MountController.SOLO, "dismount_pos": Vector3.ZERO,
+		"air": float(Data.balance("air_max")), "hold_progress": 0.0,
 	})
 
 
@@ -30,27 +24,7 @@ func mount_state() -> String:
 	return state.get("mount", MountController.SOLO)
 
 
-## Host only. Used by MountController, which owns the mount rules.
-func set_mount(mount: String, dismount_pos: Vector3 = Vector3.ZERO) -> void:
-	var next := state.duplicate(true)
-	next["mount"] = mount
-	if mount == MountController.DISMOUNTING:
-		next["dismount_pos"] = dismount_pos
-	_commit(next)
-
-
-## Disconnect while merged: both sides drop to SOLO without waiting for the host.
-func force_solo(drop_pos: Vector3) -> void:
-	if mount_state() == MountController.SOLO:
-		return
-	var next := state.duplicate(true)
-	next["mount"] = MountController.SOLO
-	next["dismount_pos"] = drop_pos
-	if multiplayer.is_server():
-		_commit(next)
-	else:
-		_apply(next)
-
+# --- Requests (SPEC 6.5 pattern) ---
 
 func request_use_tool(point: Vector3) -> void:
 	if multiplayer.is_server():
@@ -78,48 +52,119 @@ func _rpc_request_tool_next() -> void:
 		_server_tool_next(multiplayer.get_remote_sender_id())
 
 
+func request_recycle(station_id: String) -> void:
+	if multiplayer.is_server():
+		_server_recycle(station_id, multiplayer.get_unique_id())
+	else:
+		_rpc_request_recycle.rpc_id(1, station_id)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_request_recycle(station_id: String) -> void:
+	if multiplayer.is_server():
+		_server_recycle(station_id, multiplayer.get_remote_sender_id())
+
+
+func request_craft(recipe_id: String) -> void:
+	if multiplayer.is_server():
+		_server_craft(recipe_id, multiplayer.get_unique_id())
+	else:
+		_rpc_request_craft.rpc_id(1, recipe_id)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_request_craft(recipe_id: String) -> void:
+	if multiplayer.is_server():
+		_server_craft(recipe_id, multiplayer.get_remote_sender_id())
+
+
+func request_hold(station_id: String, held: bool) -> void:
+	if multiplayer.is_server():
+		_server_hold(station_id, held, multiplayer.get_unique_id())
+	else:
+		_rpc_request_hold.rpc_id(1, station_id, held)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_request_hold(station_id: String, held: bool) -> void:
+	if multiplayer.is_server():
+		_server_hold(station_id, held, multiplayer.get_remote_sender_id())
+
+
+# --- Host-side validation ---
+
 func _server_use_tool(point: Vector3, sender: int) -> void:
-	if sender != Net.peer_for_character(Characters.Character.IMAD) or Game.world == null:
+	var imad := Game.player(Characters.Character.IMAD)
+	if not _is_imad(sender) or imad == null or state.get("current_tool") != "tongs":
 		return
-	if state.get("current_tool") == "tongs":
-		_server_tongs(point)
-
-
-func _server_tongs(point: Vector3) -> void:
-	var carried: Array = state["carried"]
-	if carried.size() >= int(Data.balance("carry_capacity")):
-		return
-	var imad := Game.world.get_node_or_null("imad") as Node3D
-	var radius: float = Data.balance("tongs_radius")
-	if imad == null or _flat_distance(imad.global_position, point) > float(Data.balance("tongs_reach")) + radius:
-		return
-	var picked: Array = state["picked"]
-	var best: Node3D = null
-	var best_distance := radius
-	for entity: Node in Game.world.get_node("Entities").get_children():
-		if entity.get_meta("kind", "") != "trash" or String(entity.name) in picked:
-			continue
-		var distance := _flat_distance((entity as Node3D).global_position, point)
-		if distance <= best_distance:
-			best = entity
-			best_distance = distance
-	if best == null:
-		return
-	var next := state.duplicate(true)
-	next["carried"].append(best.get_meta("item"))
-	next["picked"].append(String(best.name))
-	_commit(next)
+	_commit_if(StationRules.tongs(state, point, imad.global_position, Game.world.get_node("Entities")))
 
 
 func _server_tool_next(sender: int) -> void:
-	if sender != Net.peer_for_character(Characters.Character.IMAD):
+	if _is_imad(sender):
+		_commit_if(StationRules.next_tool(state))
+
+
+func _server_recycle(station_id: String, sender: int) -> void:
+	var station := Interactable.near_team_body(station_id, "recycler")
+	if not _is_imad(sender) or station == null:
 		return
-	var tools: Array = state.get("tools", [])
-	if tools.size() < 2:
+	if _commit_if(StationRules.recycle(state)):
+		station.rpc("play_effect")
+
+
+func _server_craft(recipe_id: String, sender: int) -> void:
+	if not _is_imad(sender) or not Interactable.any_near_team_body("bench"):
+		return
+	if _commit_if(StationRules.craft(state, recipe_id)):
+		_rpc_invented.rpc(recipe_id)
+
+
+func _server_hold(station_id: String, held: bool, sender: int) -> void:
+	var station := Interactable.near_team_body(station_id, "tower")
+	if _is_imad(sender) and station != null:
+		station.call("server_hold", held, sender)
+
+
+# --- Host-side mutations used by stations and systems ---
+
+## Disconnect while merged: both sides drop to SOLO without waiting for the host.
+func force_solo(drop_pos: Vector3) -> void:
+	if mount_state() == MountController.SOLO:
 		return
 	var next := state.duplicate(true)
-	next["current_tool"] = tools[(tools.find(state["current_tool"]) + 1) % tools.size()]
+	next["mount"] = MountController.SOLO
+	next["dismount_pos"] = drop_pos
+	if multiplayer.is_server():
+		_commit(next)
+	else:
+		_apply(next)
+
+
+## Host only: merge changes into the state and push it.
+func set_values(changes: Dictionary) -> void:
+	var next := state.duplicate(true)
+	next.merge(changes, true)
 	_commit(next)
+
+
+func commit(next: Dictionary) -> void:
+	if multiplayer.is_server():
+		_commit(next)
+
+
+@rpc("authority", "call_local", "reliable")
+func _rpc_invented(recipe_id: String) -> void:
+	Events.item_crafted.emit(recipe_id)
+
+
+# --- Replication ---
+
+func _commit_if(next: Dictionary) -> bool:
+	if next.is_empty():
+		return false
+	_commit(next)
+	return true
 
 
 func _commit(next: Dictionary) -> void:
@@ -134,12 +179,15 @@ func _rpc_state(next: Dictionary) -> void:
 
 func _apply(next: Dictionary) -> void:
 	var previous_mount := mount_state()
+	var previous_air: Variant = state.get("air")
 	state = next
 	Events.state_changed.emit()
+	if state.get("air") != previous_air:
+		Events.air_changed.emit(float(state.get("air", 0.0)))
 	if mount_state() != previous_mount:
 		Events.mount_changed.emit(mount_state())
 		Events.context_changed.emit()
 
 
-func _flat_distance(a: Vector3, b: Vector3) -> float:
-	return Vector2(a.x - b.x, a.z - b.z).length()
+func _is_imad(sender: int) -> bool:
+	return sender == Net.peer_for_character(Characters.Character.IMAD) and Game.world != null

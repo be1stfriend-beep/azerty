@@ -16,6 +16,7 @@ var _riding := false
 var _reach: float
 var _aim_elapsed := 0.0
 var _reticle: MeshInstance3D
+var _station: Interactable
 
 
 func _init() -> void:
@@ -77,6 +78,7 @@ func _read_actions(bjorn: PlayerBase, delta: float) -> void:
 		return
 	if Input.is_action_just_pressed("tool_next"):
 		TeamState.request_tool_next()
+	_read_interact(bjorn if _riding else self)
 	if _riding:
 		var input := Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down")
 		if input.length() > AIM_DEADZONE:
@@ -95,6 +97,31 @@ func _read_actions(bjorn: PlayerBase, delta: float) -> void:
 		controller.request_mount()
 	if Input.is_action_just_pressed("grab") or Input.is_action_just_pressed("use_tool"):
 		TeamState.request_use_tool(reticle_point(bjorn))
+
+
+## Interact counts from the body: Bjorn's when riding, Imad's own when solo.
+func _read_interact(body: PlayerBase) -> void:
+	if Input.is_action_just_pressed("interact"):
+		_station = _nearest_station(body.global_position)
+		if _station != null:
+			_station.interact(self)
+	if Input.is_action_just_released("interact") and _station != null:
+		_station.release(self)
+		_station = null
+
+
+func _nearest_station(point: Vector3) -> Interactable:
+	var best: Interactable = null
+	var best_distance := INF
+	for node: Node in get_parent().get_node("Entities").get_children():
+		var station := node as Interactable
+		if station == null or not station.in_range(point):
+			continue
+		var distance := StationRules.flat_distance(point, station.global_position)
+		if distance < best_distance:
+			best = station
+			best_distance = distance
+	return best
 
 
 func _send_aim(delta: float) -> void:

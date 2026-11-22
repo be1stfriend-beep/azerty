@@ -3,7 +3,8 @@ import json
 import sys
 from pathlib import Path
 
-DATA = Path(__file__).resolve().parent.parent / "data"
+ROOT = Path(__file__).resolve().parent.parent
+DATA = ROOT / "data"
 REQUIRED = ["config", "balance", "items", "recipes", "prefabs", "entities", "dialogue"]
 
 
@@ -36,6 +37,12 @@ def check(tables: dict, levels: dict) -> list[str]:
     for kind, rule in entities.items():
         if "prefab" in rule and rule["prefab"] not in prefabs:
             errors.append(f"entity {kind}: unknown prefab {rule['prefab']}")
+        script = rule.get("script", "")
+        if script and not (ROOT / script.removeprefix("res://")).exists():
+            errors.append(f"entity {kind}: missing script {script}")
+    for recipe_id, recipe in tables["recipes"].items():
+        if recipe.get("result") not in ("inventory", "tool"):
+            errors.append(f"recipe {recipe_id}: result must be inventory or tool")
     for level_name, level in levels.items():
         for index, entity in enumerate(level.get("entities", [])):
             where = f"level {level_name} entity {index}"

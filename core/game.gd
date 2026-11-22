@@ -12,6 +12,7 @@ var world: Node3D
 var _lobby: Lobby
 var _overlay: MessageOverlay
 var _toast: Toast
+var _craft_menu: CraftMenu
 
 
 func _ready() -> void:
@@ -39,6 +40,38 @@ func has_arg(flag: String) -> bool:
 
 func show_message(text: String) -> void:
 	_toast.show_text(text)
+
+
+## Host: show a message on one peer's screen.
+func tell(peer: int, text: String) -> void:
+	if peer == multiplayer.get_unique_id():
+		show_message(text)
+	else:
+		_rpc_message.rpc_id(peer, text)
+
+
+@rpc("authority", "call_remote", "reliable")
+func _rpc_message(text: String) -> void:
+	show_message(text)
+
+
+func show_craft_menu() -> void:
+	if is_instance_valid(_craft_menu):
+		_craft_menu.open()
+
+
+func player(character: int) -> PlayerBase:
+	if world == null:
+		return null
+	var node_name := "bjorn" if character == Characters.Character.BJORN else "imad"
+	return world.get_node_or_null(node_name) as PlayerBase
+
+
+## The body that stands in the world for the team: Bjorn while merged, Imad when solo.
+func team_body() -> PlayerBase:
+	if TeamState.mount_state() == MountController.SOLO:
+		return player(Characters.Character.IMAD)
+	return player(Characters.Character.BJORN)
 
 
 func show_lobby() -> void:
@@ -71,6 +104,10 @@ func load_world(level_name: String) -> Node3D:
 func _spawn_players() -> void:
 	world.add_child(MountController.new())
 	world.add_child(TrashHider.new())
+	world.add_child(AirSystem.new())
+	world.add_child(Hud.new())
+	_craft_menu = CraftMenu.new()
+	world.add_child(_craft_menu)
 	var own: PlayerBase
 	var other: PlayerBase
 	for player: PlayerBase in [Bjorn.new(), Imad.new()]:

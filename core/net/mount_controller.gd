@@ -35,9 +35,9 @@ func _process(delta: float) -> void:
 		return
 	match TeamState.mount_state():
 		MOUNTING:
-			TeamState.set_mount(MERGED)
+			TeamState.set_values({"mount": MERGED})
 		DISMOUNTING:
-			TeamState.set_mount(SOLO)
+			TeamState.set_values({"mount": SOLO})
 
 
 func can_mount(imad: Node3D, bjorn: Node3D) -> bool:
@@ -71,11 +71,6 @@ func _rpc_request_dismount() -> void:
 		_server_dismount(multiplayer.get_remote_sender_id())
 
 
-@rpc("authority", "call_remote", "reliable")
-func _rpc_message(text: String) -> void:
-	Game.show_message(text)
-
-
 func _server_mount(sender: int) -> void:
 	var imad := _player("imad")
 	var bjorn := _player("bjorn")
@@ -84,7 +79,7 @@ func _server_mount(sender: int) -> void:
 	if not can_mount(imad, bjorn):
 		return
 	_phase_left = Data.balance("mount_time")
-	TeamState.set_mount(MOUNTING)
+	TeamState.set_values({"mount": MOUNTING})
 
 
 func _server_dismount(sender: int) -> void:
@@ -94,10 +89,10 @@ func _server_dismount(sender: int) -> void:
 		return
 	var drop: Variant = _free_drop(bjorn)
 	if drop == null:
-		_tell(sender, "No room to climb down here")
+		Game.tell(sender, "No room to climb down here")
 		return
 	_phase_left = Data.balance("dismount_time")
-	TeamState.set_mount(DISMOUNTING, drop)
+	TeamState.set_values({"mount": DISMOUNTING, "dismount_pos": drop})
 
 
 func _free_drop(bjorn: Node3D) -> Variant:
@@ -117,13 +112,6 @@ func _free_drop(bjorn: Node3D) -> Variant:
 	return null
 
 
-func _tell(peer: int, text: String) -> void:
-	if peer == multiplayer.get_unique_id():
-		Game.show_message(text)
-	else:
-		_rpc_message.rpc_id(peer, text)
-
-
 func _player(player_name: String) -> Node3D:
 	return get_parent().get_node_or_null(player_name) as Node3D
 
@@ -132,8 +120,6 @@ func _on_mount_changed(mount: String) -> void:
 	if mount == SOLO:
 		_cycles += 1
 		NetMeter.set_line("mount cycles", str(_cycles))
-	var own := "Bjorn" if Net.own_character() == Characters.Character.BJORN else "Imad"
-	NetMeter.set_line("name", "BJIMAD" if mount == MERGED else own)
 
 
 func _on_partner_lost() -> void:
