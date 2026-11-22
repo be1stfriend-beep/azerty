@@ -1,0 +1,29 @@
+{
+	"start": [
+		{"speaker": "Imad", "text": "Bjorn?! You're alive!"},
+		{"speaker": "Bjorn", "text": "Hi. Yes. I was just passing by. For three weeks."},
+		{"speaker": "Imad", "text": "I've been talking to a bucket. The bucket had better answers."},
+		{"speaker": "Imad", "text": "Listen. You've got the legs, I've got the hands. Get me on your back."},
+		{"speaker": "Bjorn", "text": "I'd prefer to walk next to you. In a straight line. Forever."},
+		{"speaker": "Imad", "text": "Bjorn."},
+		{"speaker": "Bjorn", "text": "...Climb."}
+	],
+	"merge": [
+		{"speaker": "Bjorn", "text": "Together we are... Bjimad."},
+		{"speaker": "Imad", "text": "That's a sneeze, not a name."},
+		{"speaker": "Bjorn", "text": "It's fine. It's a good sneeze."}
+	],
+	"tower": [
+		{"speaker": "Imad", "text": "Look at that. Actual green."},
+		{"speaker": "Bjorn", "text": "I will try not to step on it."}
+	],
+	"boss_done": [
+		{"speaker": "Imad", "text": "It ran! The Roach Persuader works!"},
+		{"speaker": "Bjorn", "text": "I would also run from you. With a broom."}
+	],
+	"end": [
+		{"speaker": "Radio", "text": "...survivors... if anyone hears this... the rail yard still has power. Bring filters..."},
+		{"speaker": "Imad", "text": "There are more of us?"},
+		{"speaker": "Bjorn", "text": "Great. I'll pack snacks."}
+	]
+}

@@ -1,0 +1,10 @@
+{
+	"trash": {"prefab_from": "item"},
+	"recycler": {"prefab": "recycler"},
+	"bench": {"prefab": "bench"},
+	"tower": {"prefab": "tower"},
+	"pillar": {"prefab": "pillar"},
+	"perch": {"prefab": "perch"},
+	"gate": {"prefab": "gate"},
+	"prop": {"prefab_from": "prefab"}
+}

@@ -1,0 +1,18 @@
+{
+	"trash_bottle": {"model": null, "tint_group": "plastic"},
+	"trash_can": {"model": null, "tint_group": "metal"},
+	"trash_cardboard": {"model": null, "tint_group": "paper"},
+	"trash_apple_core": {"model": null, "tint_group": "compost"},
+	"trash_plank": {"model": null, "tint_group": "wood"},
+	"prop_barrel": {"model": null, "tint_group": "rust"},
+	"prop_crate": {"model": null, "tint_group": "wood"},
+	"prop_tyre": {"model": null, "tint_group": "soot"},
+	"prop_pipe": {"model": null, "tint_group": "rust"},
+	"prop_scrap_tower": {"model": null, "tint_group": "rust"},
+	"pillar": {"model": null, "tint_group": "concrete"},
+	"perch": {"model": null, "tint_group": "wood"},
+	"gate": {"model": null, "tint_group": "rust"},
+	"recycler": {"model": null, "tint_group": "teal"},
+	"bench": {"model": null, "tint_group": "wood"},
+	"tower": {"model": null, "tint_group": "concrete"}
+}

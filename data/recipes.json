@@ -1,0 +1,4 @@
+{
+	"filter": {"name": "Filter", "cost": {"compost": 3, "paper": 2, "metal": 2}, "invention_name": "The Sneeze Filter"},
+	"broomstick": {"name": "Broomstick", "cost": {"wood": 3, "plastic": 1}, "invention_name": "The Roach Persuader"}
+}
