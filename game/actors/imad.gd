@@ -1,8 +1,8 @@
 class_name Imad
 extends PlayerBase
-## Solo: crawls on his cart. Mounted: sits at Bjorn's Saddle and aims the tool.
+## Solo: crawls on his arms. Mounted: sits at Bjorn's Saddle and aims the tool.
 
-const SEAT_OFFSET := Vector3(0, -0.35, 0)
+const SEAT_OFFSET := Vector3(0, -0.5, 0)
 const SOLO_RETICLE_DISTANCE := 1.2
 const AIM_DEADZONE := 0.2
 const RETICLE_HEIGHT := 0.05
@@ -58,7 +58,7 @@ func _move_input() -> Vector2:
 
 
 func _build_rig() -> CharacterBuilder:
-	return CharacterBuilder.build_imad()
+	return CrawlRig.build()
 
 
 func _collider_radius() -> float:
@@ -150,7 +150,7 @@ func _on_mount_changed(mount: String) -> void:
 	if riding == _riding:
 		return
 	_riding = riding
-	(rig.body.get_node("Cart") as Node3D).visible = not riding
+	(rig as CrawlRig).riding = riding
 	collision_shape.disabled = riding
 	if not riding:
 		# Same position on every peer: it comes from the host through TeamState.

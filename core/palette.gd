@@ -40,7 +40,7 @@ const TINTS: Dictionary = {
 	"roach_shell": ROACH_SHELL,
 	"char_white": BONE,
 	"char_dark": SOOT,
-	"char_cart": RUST,
+	"imad_overalls": RUST,
 	"char_shadow": SOOT,
 	"roach_belly": RESTORED_GRASS,
 	"roach_eye": RUST,
@@ -51,7 +51,7 @@ const TINTS: Dictionary = {
 ## Groups drawn with the character variant: no dust, stronger rim.
 const CHARACTER_GROUPS: Array[String] = [
 	"bjorn_parka", "bjorn_pompom", "imad_vest", "imad_goggles", "skin_a", "skin_b",
-	"char_white", "char_dark", "char_cart", "char_shadow",
+	"imad_overalls", "char_white", "char_dark", "char_shadow",
 	"roach_shell", "roach_belly", "roach_eye", "roach_eye_hot",
 	# The tower ring sits where restoration fades to zero, so it must not be dusted.
 	"tower_ring",

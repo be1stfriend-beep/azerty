@@ -24,12 +24,14 @@ func _ready() -> void:
 func _start_dev_level() -> void:
 	var world := Game.load_world(Data.config().get("start_level", "main"))
 	# Static rigs only: lets screenshots judge character contrast without a network match.
-	for character_name: String in ["bjorn", "imad"]:
-		var marker := world.get_node_or_null("Markers/%s" % character_name) as Node3D
+	var rigs: Array[CharacterBuilder] = [CharacterBuilder.build_bjorn(), CrawlRig.build()]
+	for i in rigs.size():
+		var marker := world.get_node_or_null("Markers/%s" % ["bjorn", "imad"][i]) as Node3D
 		if marker != null:
-			var rig := CharacterBuilder.build_bjorn() if character_name == "bjorn" else CharacterBuilder.build_imad()
-			rig.position = marker.position
-			world.add_child(rig)
+			rigs[i].position = marker.position
+		world.add_child(rigs[i])
+	if Game.has_arg("--pose"):
+		add_child(PosePreview.new(rigs[0], rigs[1] as CrawlRig, Game.arg_after("--pose")))
 	var camera := Camera3D.new()
 	world.add_child(camera)
 	var position_and_target := _cam_arg()
