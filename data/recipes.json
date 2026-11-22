@@ -1,4 +1,5 @@
 {
+	"mask": {"name": "Mask", "cost": {"plastic": 2, "paper": 2}, "result": "inventory", "invention_name": "The Breathe-Easy 3000"},
 	"filter": {"name": "Filter", "cost": {"compost": 3, "paper": 2, "metal": 2}, "result": "inventory", "invention_name": "The Sneeze Filter"},
 	"broomstick": {"name": "Broomstick", "cost": {"wood": 3, "plastic": 1}, "result": "tool", "invention_name": "The Roach Persuader"}
 }

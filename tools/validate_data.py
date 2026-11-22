@@ -98,11 +98,40 @@ def check_puzzles(tables: dict, levels: dict) -> list[str]:
     return errors
 
 
+STATIONS = ("recycler", "bench")
+STATION_CLEARANCE = 2.0
+SLICE_FORBIDDEN = ("tower", "pillar", "perch", "gate", "plate", "door", "vent")
+
+
+def check_level_layout(tables: dict, levels: dict) -> list[str]:
+    """Trash must not crowd a station; the slice level carries none of the frozen features."""
+    errors: list[str] = []
+    for level_name, level in levels.items():
+        entities = level.get("entities", [])
+        stations = [e["pos"] for e in entities if e.get("kind") in STATIONS]
+        for index, entity in enumerate(entities):
+            if entity.get("kind") != "trash":
+                continue
+            x, _, z = entity["pos"]
+            for sx, _, sz in stations:
+                if ((x - sx) ** 2 + (z - sz) ** 2) ** 0.5 < STATION_CLEARANCE:
+                    errors.append(f"level {level_name} entity {index}: trash closer than {STATION_CLEARANCE} m to a station")
+    if tables["config"].get("start_level") not in levels:
+        errors.append(f"config start_level {tables['config'].get('start_level')} has no level file")
+    for index, entity in enumerate(levels.get("slice", {}).get("entities", [])):
+        if entity.get("kind") in SLICE_FORBIDDEN:
+            errors.append(f"level slice entity {index}: {entity['kind']} is frozen until the slice works")
+    if "slice" in levels and "mask" not in tables["recipes"]:
+        errors.append("slice level needs recipe mask")
+    return errors
+
+
 def main() -> int:
     tables, levels, errors = load_all()
     errors += check(tables, levels)
     if not errors:
         errors += check_puzzles(tables, levels)
+        errors += check_level_layout(tables, levels)
     for error in errors:
         print("ERROR:", error)
     if errors:

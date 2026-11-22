@@ -49,5 +49,8 @@
 	"valve_seconds": 25,
 	"plate_radius": 1.3,
 	"join_timeout": 8.0,
-	"join_notice_seconds": 1.5
+	"join_notice_seconds": 1.5,
+	"recycle_seconds_per_item": 0.3,
+	"slice_outside_trash_needed": 5,
+	"air_drain_mask_mult": 0.6
 }
