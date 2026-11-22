@@ -11,6 +11,8 @@ const HUNT_TIMEOUT := 3.0
 const RETURN_TIMEOUT := 30.0
 ## Where Bjorn stands to kick a bin: just outside its shell, facing it.
 const BIN_KICK_OFFSET := Vector3(0, 0, 1.5)
+## Imad's distance from the roach for a broom swing: inside tongs reach plus broom radius.
+const BROOM_STAND := 2.0
 
 
 func _run() -> void:
@@ -134,6 +136,7 @@ func _return_to_dome() -> void:
 	_place_imad_at("bench_0")
 	TeamState._server_craft(Objective.TOWER_RECIPE, _imad_id)
 	_check("craft_filter", int((TeamState.state["inventory"] as Dictionary).get(Objective.TOWER_RECIPE, 0)) > 0, "stash %s" % TeamState.state["stash"])
+	await _broom_fight()
 	_place_imad_at("tower_0")
 	TeamState._server_hold("tower_0", true, _imad_id)
 	var lit := await _wait_for(SliceHunt.tower_lit, float(Data.balance("tower_hold_seconds")) + STEP_TIMEOUT)
@@ -141,6 +144,29 @@ func _return_to_dome() -> void:
 	var done := await _wait_for(func() -> bool: return TeamState.state.get("slice_complete", false), float(Data.balance("slice_end_delay")) + STEP_TIMEOUT)
 	var hunt := Game.world.get_node("SliceHunt") as SliceHunt
 	_check("slice_complete", done and hunt._card != null, "hunt '%s', complete %s" % [TeamState.state.get("hunt", ""), TeamState.state.get("slice_complete", false)])
+
+
+## Craft the Broomstick, equip it, and finish a stunned roach: it must crawl home and be gone.
+func _broom_fight() -> void:
+	var stash: Dictionary = TeamState.state["stash"].duplicate()
+	var cost: Dictionary = Data.recipe("broomstick")["cost"]
+	for material: String in cost:
+		stash[material] = int(stash.get(material, 0)) + int(cost[material])
+	TeamState.set_values({"stash": stash})
+	_place_imad_at("bench_0")
+	TeamState._server_craft("broomstick", _imad_id)
+	TeamState._server_tool_next(_imad_id)
+	_check("equip_broomstick", TeamState.state["current_tool"] == "broomstick", "tool %s" % TeamState.state["current_tool"])
+	var roach := Game.world.get_node("cockroach") as Cockroach
+	var imad := Game.player(Characters.Character.IMAD)
+	imad.respawn(roach.global_position + Vector3(0, 0, -BROOM_STAND))
+	var swings := ceili(float(roach.hp) / float(Data.balance("broom_damage")))
+	for i in swings:
+		roach._set_state(Cockroach.STUNNED)
+		TeamState._server_use_tool(roach.global_position, _imad_id)
+	var gone := await _wait_for(func() -> bool: return roach.machine.state == Cockroach.GONE, RETURN_TIMEOUT)
+	_check("broom_defeats_roach", gone and not roach.visible, "roach %s, hp %d after %d swings" % [roach.machine.state, roach.hp, swings])
+	TeamState._server_tool_next(_imad_id)
 
 
 func _empty_bag() -> void:

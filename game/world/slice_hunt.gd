@@ -49,7 +49,7 @@ func _process(delta: float) -> void:
 			if roach.machine.state == Cockroach.IDLE:
 				_outside_picks = 0
 				TeamState.set_values({"hunt": HUNT_NONE})
-			elif roach.machine.state == Cockroach.GUARD:
+			elif roach.machine.state in [Cockroach.GUARD, Cockroach.GONE]:
 				TeamState.set_values({"hunt": HUNT_DONE})
 		HUNT_DONE:
 			if TeamState.state.get("slice_complete", false) or not tower_lit():

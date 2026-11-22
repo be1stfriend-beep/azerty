@@ -112,7 +112,7 @@ func _context_buttons() -> Array[Dictionary]:
 	var label: String = context.get("label", Data.hint("label_none"))
 	var dim: bool = context.get("action", Interaction.NONE) == Interaction.NONE
 	result = [{"label": label, "action": "interact", "big": true, "dim": dim}]
-	# Tools beyond the tongs only exist in the full game, never in the slice.
+	# The tool buttons only appear once the Broomstick has been crafted.
 	if (TeamState.state.get("tools", []) as Array).size() > 1:
 		result.append({"label": "Use tool", "action": "use_tool"})
 		result.append({"label": "Next tool", "action": "tool_next"})

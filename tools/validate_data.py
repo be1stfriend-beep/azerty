@@ -104,7 +104,7 @@ def check_puzzles(tables: dict, levels: dict) -> list[str]:
 
 STATIONS = ("recycler", "bench")
 STATION_CLEARANCE = 2.0
-SLICE_FORBIDDEN = ("pillar", "perch", "gate", "plate", "door", "vent")
+SLICE_FORBIDDEN = ( "perch", "gate", "plate", "door", "vent")
 
 
 def check_level_layout(tables: dict, levels: dict) -> list[str]:

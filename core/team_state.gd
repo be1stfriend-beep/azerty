@@ -117,6 +117,7 @@ func _server_use_tool(point: Vector3, sender: int) -> void:
 		"broomstick":
 			var roach := Game.world.get_node_or_null("cockroach") as Cockroach
 			var reach := float(Data.balance("tongs_reach")) + float(Data.balance("broom_radius"))
+			_rpc_broom_swung.rpc()
 			if roach != null and StationRules.flat_distance(imad.global_position, point) <= reach:
 				roach.server_broom_hit(point, imad)
 
@@ -190,6 +191,13 @@ func commit(next: Dictionary) -> void:
 @rpc("authority", "call_local", "reliable")
 func _rpc_invented(recipe_id: String) -> void:
 	Events.item_crafted.emit(recipe_id)
+
+
+@rpc("authority", "call_local", "unreliable")
+func _rpc_broom_swung() -> void:
+	var imad := Game.player(Characters.Character.IMAD) as Imad
+	if imad != null:
+		imad.swing_broom()
 
 
 # --- Replication ---

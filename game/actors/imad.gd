@@ -19,6 +19,7 @@ var _aim_elapsed := 0.0
 var _reticle: MeshInstance3D
 var _station: Interactable
 var _shown_carried: Array = []
+var _broom: BroomModel
 
 
 func _init() -> void:
@@ -32,6 +33,8 @@ func _ready() -> void:
 	super._ready()
 	_reticle = _build_reticle()
 	add_child(_reticle)
+	_broom = BroomModel.build()
+	(rig as CrawlRig).torso.add_child(_broom)
 	Events.mount_changed.connect(_on_mount_changed)
 	Events.trash_picked.connect(_on_trash_picked)
 	Events.state_changed.connect(_on_state_changed)
@@ -143,6 +146,14 @@ func _on_state_changed() -> void:
 		_shown_carried = carried.duplicate()
 		(rig as CrawlRig).show_carried(carried)
 	(rig as CrawlRig).wear_mask(DomeGate.has_mask())
+	var broom_out: bool = TeamState.state.get("current_tool", "") == "broomstick"
+	_broom.visible = broom_out
+	(rig as CrawlRig).tongs.visible = not broom_out
+
+
+## Every peer sees the swing the host just accepted, hit or miss.
+func swing_broom() -> void:
+	_broom.swing()
 
 
 func _on_mount_changed(mount: String) -> void:

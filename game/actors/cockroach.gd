@@ -183,7 +183,10 @@ func _think(delta: float) -> void:
 			_face(position + heading, delta)
 			position += heading * float(Data.balance("roach_chase_speed")) * FLEE_SPEED_MULT * delta
 			if hunt_only:
-				if to_home.length() <= FLEE_ARRIVE_DISTANCE:
+				# Beaten with the broom: it crawls home and stays there for good.
+				if to_home.length() <= FLEE_ARRIVE_DISTANCE and hp == 0:
+					_set_state(GONE)
+				elif to_home.length() <= FLEE_ARRIVE_DISTANCE:
 					_guarding = true
 					hp = int(Data.balance("roach_hp"))
 					_set_state(GUARD)
@@ -315,5 +318,8 @@ func _on_local_state_changed(state: String) -> void:
 		show()
 	if state == GONE:
 		hide()
-		Gate.open(Game.world)
+		if hunt_only:
+			Game.show_message(Data.hint("roach_defeated"))
+		else:
+			Gate.open(Game.world)
 	Events.boss_state_changed.emit(state)
