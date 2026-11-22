@@ -31,6 +31,13 @@ func is_safe(point: Vector3) -> bool:
 	return false
 
 
+## Host only.
+func damage(amount: float) -> void:
+	_air = maxf(_air - amount, 0.0)
+	_pushed = _air
+	TeamState.set_values({"air": _air})
+
+
 func _process(delta: float) -> void:
 	if not multiplayer.is_server() or TeamState.state.is_empty():
 		return
@@ -55,6 +62,9 @@ func _out_of_air() -> void:
 	var imad_spawn := get_parent().get_node("Markers/imad") as Node3D
 	TeamState.commit(StationRules.out_of_air(TeamState.state, imad_spawn.global_position))
 	_rpc_respawn.rpc()
+	var roach := get_parent().get_node_or_null("cockroach") as Cockroach
+	if roach != null:
+		roach.reset()
 
 
 @rpc("authority", "call_local", "reliable")

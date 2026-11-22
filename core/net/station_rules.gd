@@ -89,6 +89,7 @@ static func out_of_air(state: Dictionary, imad_spawn: Vector3) -> Dictionary:
 	next["carried"] = []
 	next["mount"] = MountController.SOLO
 	next["dismount_pos"] = imad_spawn
+	next["on_perch"] = false
 	return next
 
 

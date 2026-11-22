@@ -93,7 +93,8 @@ func _read_actions(bjorn: PlayerBase, delta: float) -> void:
 	if in_range != bjorn_in_range:
 		bjorn_in_range = in_range
 		Events.context_changed.emit()
-	if in_range and Input.is_action_just_pressed("mount"):
+	var perch_remount: bool = TeamState.state.get("on_perch", false) and Input.is_action_just_pressed("interact")
+	if in_range and (Input.is_action_just_pressed("mount") or perch_remount):
 		controller.request_mount()
 	if Input.is_action_just_pressed("grab") or Input.is_action_just_pressed("use_tool"):
 		TeamState.request_use_tool(reticle_point(bjorn))

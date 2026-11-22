@@ -9,6 +9,8 @@ const ACCELERATION := 40.0
 const TURN_SPEED := 12.0
 const MOVE_DEADZONE := 0.1
 const STATE_GROUNDED := 1
+const KNOCK_UP_SPEED := 4.0
+const SERVER_PEER := 1
 
 var character: int = Characters.Character.BJORN
 var move_speed: float = 0.0
@@ -123,6 +125,16 @@ func respawn(pos: Vector3) -> void:
 	global_position = pos
 	velocity = Vector3.ZERO
 	reset_remote_target()
+
+
+## Sent by the host to every peer; only the owner of this body applies it.
+@rpc("any_peer", "call_local", "reliable")
+func knock_back(offset: Vector3) -> void:
+	if multiplayer.get_remote_sender_id() != SERVER_PEER or not is_multiplayer_authority():
+		return
+	# Speed that the movement deceleration brings to rest after exactly this distance.
+	var speed := sqrt(2.0 * ACCELERATION * offset.length())
+	velocity = offset.normalized() * speed + Vector3.UP * KNOCK_UP_SPEED
 
 
 ## Remotes stop interpolating toward a stale packet, e.g. after the rider was placed by the mount.

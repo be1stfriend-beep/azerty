@@ -12,6 +12,9 @@ const DROP_ANGLES: Array[float] = [180.0, 90.0, -90.0, 135.0, -135.0, 45.0, -45.
 const DROP_PROBE_RADIUS := 0.45
 const DROP_PROBE_HEIGHT := 0.6
 const WORLD_MASK := 1
+const PERCH_HEIGHT := 2.5
+## How close Bjorn's body must be to the perch to drop or collect the rider there.
+const PERCH_RANGE := 3.0
 
 var _phase_left := 0.0
 var _cycles := 0
@@ -41,8 +44,11 @@ func _process(delta: float) -> void:
 
 
 func can_mount(imad: Node3D, bjorn: Node3D) -> bool:
-	return TeamState.mount_state() == SOLO \
-		and imad.global_position.distance_to(bjorn.global_position) <= float(Data.balance("mount_range"))
+	if TeamState.mount_state() != SOLO:
+		return false
+	if TeamState.state.get("on_perch", false):
+		return _near_perch(bjorn)
+	return imad.global_position.distance_to(bjorn.global_position) <= float(Data.balance("mount_range"))
 
 
 func request_mount() -> void:
@@ -79,13 +85,18 @@ func _server_mount(sender: int) -> void:
 	if not can_mount(imad, bjorn):
 		return
 	_phase_left = Data.balance("mount_time")
-	TeamState.set_values({"mount": MOUNTING})
+	TeamState.set_values({"mount": MOUNTING, "on_perch": false})
 
 
 func _server_dismount(sender: int) -> void:
 	var bjorn := _player("bjorn")
 	var players := [Net.peer_for_character(Characters.Character.BJORN), Net.peer_for_character(Characters.Character.IMAD)]
 	if not (sender in players) or bjorn == null or TeamState.mount_state() != MERGED:
+		return
+	if _near_perch(bjorn):
+		_phase_left = Data.balance("dismount_time")
+		var perch_top := _perch().global_position + Vector3.UP * PERCH_HEIGHT
+		TeamState.set_values({"mount": DISMOUNTING, "dismount_pos": perch_top, "on_perch": true})
 		return
 	var drop: Variant = _free_drop(bjorn)
 	if drop == null:
@@ -110,6 +121,15 @@ func _free_drop(bjorn: Node3D) -> Variant:
 		if space.intersect_shape(query, 1).is_empty():
 			return spot
 	return null
+
+
+func _perch() -> Node3D:
+	return get_parent().get_node_or_null("Entities/perch_0") as Node3D
+
+
+func _near_perch(bjorn: Node3D) -> bool:
+	var perch := _perch()
+	return perch != null and StationRules.flat_distance(bjorn.global_position, perch.global_position) <= PERCH_RANGE
 
 
 func _player(player_name: String) -> Node3D:

@@ -12,7 +12,7 @@ func reset() -> void:
 		"carried": [], "stash": {}, "tools": ["tongs"], "current_tool": "tongs",
 		"inventory": {}, "picked": [], "towers": [],
 		"mount": MountController.SOLO, "dismount_pos": Vector3.ZERO,
-		"air": float(Data.balance("air_max")), "hold_progress": 0.0,
+		"air": float(Data.balance("air_max")), "hold_progress": 0.0, "on_perch": false,
 	})
 
 
@@ -95,9 +95,16 @@ func _rpc_request_hold(station_id: String, held: bool) -> void:
 
 func _server_use_tool(point: Vector3, sender: int) -> void:
 	var imad := Game.player(Characters.Character.IMAD)
-	if not _is_imad(sender) or imad == null or state.get("current_tool") != "tongs":
+	if not _is_imad(sender) or imad == null:
 		return
-	_commit_if(StationRules.tongs(state, point, imad.global_position, Game.world.get_node("Entities")))
+	match state.get("current_tool"):
+		"tongs":
+			_commit_if(StationRules.tongs(state, point, imad.global_position, Game.world.get_node("Entities")))
+		"broomstick":
+			var roach := Game.world.get_node_or_null("cockroach") as Cockroach
+			var reach := float(Data.balance("tongs_reach")) + float(Data.balance("broom_radius"))
+			if roach != null and StationRules.flat_distance(imad.global_position, point) <= reach:
+				roach.server_broom_hit(point, imad)
 
 
 func _server_tool_next(sender: int) -> void:

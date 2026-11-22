@@ -105,6 +105,11 @@ func _spawn_players() -> void:
 	world.add_child(MountController.new())
 	world.add_child(TrashHider.new())
 	world.add_child(AirSystem.new())
+	var roach := Cockroach.new()
+	var roach_marker := world.get_node_or_null("Markers/roach") as Node3D
+	if roach_marker != null:
+		roach.position = roach_marker.position
+	world.add_child(roach)
 	world.add_child(Hud.new())
 	_craft_menu = CraftMenu.new()
 	world.add_child(_craft_menu)
