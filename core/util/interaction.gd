@@ -66,11 +66,10 @@ static func nearest_trash(imad: Imad, bjorn: PlayerBase, riding: bool) -> Node3D
 	if riding:
 		center = imad.reticle_point(bjorn) if imad.aim_override else bjorn.global_position
 		radius = radius if imad.aim_override else float(Data.balance("tongs_reach"))
-	var picked: Array = TeamState.state.get("picked", [])
 	var best: Node3D = null
 	var best_distance := radius
 	for node: Node in Game.world.get_node("Entities").get_children():
-		if node.get_meta("kind", "") != "trash" or String(node.name) in picked:
+		if not StationRules.is_loose(node, TeamState.state):
 			continue
 		var trash := node as Node3D
 		var distance := StationRules.flat_distance(trash.global_position, center)

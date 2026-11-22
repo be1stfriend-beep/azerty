@@ -10,7 +10,7 @@ func reset() -> void:
 		return
 	_commit({
 		"carried": [], "carried_ids": [], "drops": {}, "holding": "", "plates": {}, "vents_off": false, "stash": {}, "tools": ["tongs"], "current_tool": "tongs",
-		"inventory": {}, "picked": [], "towers": [],
+		"inventory": {}, "picked": [], "spilled": [], "towers": [],
 		"mount": MountController.SOLO, "dismount_pos": Vector3.ZERO,
 		"air": float(Data.balance("air_max")), "hold_progress": 0.0, "on_perch": false,
 	})

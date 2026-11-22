@@ -499,6 +499,58 @@
 				20.0
 			],
 			"rot": -20.0
+		},
+		{
+			"kind": "bin",
+			"items": [
+				"bottle",
+				"bottle",
+				"cardboard"
+			],
+			"pos": [
+				-11.0,
+				0.0,
+				0.0
+			]
+		},
+		{
+			"kind": "bin",
+			"items": [
+				"can",
+				"bottle",
+				"plank"
+			],
+			"pos": [
+				11.0,
+				0.0,
+				1.0
+			]
+		},
+		{
+			"kind": "bin",
+			"items": [
+				"apple_core",
+				"bottle",
+				"can"
+			],
+			"pos": [
+				5.0,
+				0.0,
+				21.0
+			]
+		},
+		{
+			"kind": "bin",
+			"items": [
+				"cardboard",
+				"can",
+				"plank"
+			],
+			"pos": [
+				-7.0,
+				0.0,
+				26.0
+			]
 		}
 	]
 }

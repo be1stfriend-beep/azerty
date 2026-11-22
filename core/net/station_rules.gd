@@ -14,11 +14,10 @@ static func tongs(state: Dictionary, point: Vector3, imad_pos: Vector3, entities
 		return {}
 	if flat_distance(imad_pos, point) > float(Data.balance("tongs_reach")) + radius:
 		return {}
-	var picked: Array = state["picked"]
 	var best: Node3D = null
 	var best_distance := radius
 	for entity: Node in entities.get_children():
-		if entity.get_meta("kind", "") != "trash" or String(entity.name) in picked:
+		if not is_loose(entity, state):
 			continue
 		var distance := flat_distance((entity as Node3D).global_position, point)
 		if distance <= best_distance and in_sight(imad_pos, entity as Node3D):
@@ -31,6 +30,14 @@ static func tongs(state: Dictionary, point: Vector3, imad_pos: Vector3, entities
 	next["carried_ids"].append(String(best.name))
 	next["picked"].append(String(best.name))
 	return next
+
+
+## Grabbable trash: not taken yet and, if it sits in a bin, only once Bjorn has kicked it out.
+static func is_loose(entity: Node, state: Dictionary) -> bool:
+	if entity.get_meta("kind", "") != "trash" or String(entity.name) in state.get("picked", []):
+		return false
+	var bin: String = entity.get_meta("bin", "")
+	return bin == "" or bin in state.get("spilled", [])
 
 
 ## Tongs cannot reach through walls, fences or closed doors (anything on the world layer).

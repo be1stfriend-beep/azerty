@@ -55,6 +55,16 @@ static func build(prefab_id: String) -> Node3D:
 				part(root, box(Vector3(side, height, side)), Vector3(0.15 * (i % 2), top + height * 0.5, 0), groups[i], Vector3(0, i * 17.0, 0))
 				top += height
 			box_collision(root, Vector3(3.0, top, 3.0))
+		"bin":
+			part(root, cyl(0.55, 0.45, 1.1), Vector3(0, 0.55, 0))
+			part(root, cyl(0.6, 0.6, 0.1), Vector3(0, 1.1, 0), "soot")
+			var heap := Node3D.new()
+			heap.name = "Heap"
+			root.add_child(heap)
+			part(heap, sphere(0.45), Vector3(0, 1.15, 0), "paper", Vector3.ZERO, Vector3(1, 0.6, 1))
+			part(heap, cyl(0.12, 0.12, 0.45), Vector3(0.2, 1.4, 0.1), "plastic", Vector3(0, 0, 30))
+			part(heap, box(Vector3(0.35, 0.3, 0.35)), Vector3(-0.2, 1.35, -0.1), "paper", Vector3(0, 20, 15))
+			_cylinder_collision(root, 0.55, 1.1)
 		"pillar":
 			for i in 5:
 				part(root, box(Vector3(2, 1, 2)), Vector3(0, 0.5 + i, 0), "concrete" if i % 2 == 0 else "bone")

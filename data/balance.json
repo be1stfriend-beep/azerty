@@ -58,5 +58,7 @@
 	"roach_flee_remove_seconds": 4,
 	"objective_recycle_at": 3,
 	"mask_gate_push": 0.5,
-	"mask_gate_message_seconds": 5
+	"mask_gate_message_seconds": 5,
+	"bin_spill_radius": 1.3,
+	"bin_hint_distance": 8
 }

@@ -50,6 +50,10 @@ def check(tables: dict, levels: dict) -> list[str]:
                 errors.append(f"{where}: unknown kind {entity.get('kind')}")
             if entity.get("kind") == "trash" and entity.get("item") not in items:
                 errors.append(f"{where}: unknown item {entity.get('item')}")
+            if entity.get("kind") == "bin":
+                spill = entity.get("items", [])
+                if not spill or any(item not in items for item in spill):
+                    errors.append(f"{where}: bin items {spill} must be known items")
             if "prefab" in entity and entity["prefab"] not in prefabs:
                 errors.append(f"{where}: unknown prefab {entity['prefab']}")
     return errors

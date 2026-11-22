@@ -83,9 +83,8 @@ func _on_remote_state(state: int, previous: int) -> void:
 
 ## Visual only: loose trash in front hops in place, so the peers never disagree on where it lies.
 func _nudge_trash() -> void:
-	var picked: Array = TeamState.state.get("picked", [])
 	for node: Node in get_parent().get_node("Entities").get_children():
-		if node.get_meta("kind", "") != "trash" or String(node.name) in picked:
+		if not StationRules.is_loose(node, TeamState.state):
 			continue
 		var trash := node as Node3D
 		var to_trash := trash.global_position - global_position
@@ -122,6 +121,7 @@ func server_kick(sender: int) -> void:
 	if now - _last_kick_msec < int(float(Data.balance("kick_cooldown")) * 1000.0):
 		return
 	_last_kick_msec = now
+	Bin.server_kick(get_tree(), global_position, global_basis.z)
 	var target := _kick_target()
 	if target == null:
 		return

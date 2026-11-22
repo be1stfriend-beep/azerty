@@ -9,6 +9,8 @@ const GATE_PROBE := Vector3(0, 0, 16)
 const OUTSIDE_PICK_MAX := 26.0
 const HUNT_TIMEOUT := 3.0
 const RETURN_TIMEOUT := 30.0
+## Where Bjorn stands to kick a bin: just outside its shell, facing it.
+const BIN_KICK_OFFSET := Vector3(0, 0, 1.5)
 
 
 func _run() -> void:
@@ -17,6 +19,7 @@ func _run() -> void:
 	_bjorn_id = Net.peer_for_character(Characters.Character.BJORN)
 	_imad_id = Net.peer_for_character(Characters.Character.IMAD)
 	print("autotest-slice: fake peer ids bjorn=%d imad=%d" % [_bjorn_id, _imad_id])
+	_kick_bin()
 	await _collect_dome_trash()
 	await _recycle_all()
 	_check_barrier("barrier_holds_without_mask", true)
@@ -26,6 +29,21 @@ func _run() -> void:
 	await _return_to_dome()
 	print("autotest-slice: %d PASS, %d FAIL" % [_passes, _failures])
 	get_tree().quit(1 if _failures > 0 else 0)
+
+
+## Only Bjorn's kick, facing the bin, may spill it; the spill must then be grabbable trash.
+func _kick_bin() -> void:
+	var bjorn := Game.player(Characters.Character.BJORN)
+	var bin := Game.world.get_node("Entities/bin_0") as Bin
+	var spill := Game.world.get_node("Entities/bin_0_spill_0")
+	var sealed := not StationRules.is_loose(spill, TeamState.state)
+	bjorn.respawn(bin.global_position + BIN_KICK_OFFSET)
+	bjorn.rotation.y = atan2(-BIN_KICK_OFFSET.x, -BIN_KICK_OFFSET.z)
+	bjorn.server_kick(_imad_id)
+	var refused := not bin.is_spilled()
+	bjorn.server_kick(_bjorn_id)
+	_check("kick_bin", sealed and refused and bin.is_spilled() and StationRules.is_loose(spill, TeamState.state), "sealed %s, refused imad %s, spilled %s" % [sealed, refused, TeamState.state["spilled"]])
+	bjorn.respawn((Game.world.get_node("Markers/bjorn") as Node3D).global_position)
 
 
 ## Real pickups inside the Dome until the carried load can pay for the Mask once recycled.
@@ -108,7 +126,7 @@ func _return_to_dome() -> void:
 func _free_trash(min_distance: float, max_distance: float) -> Array[Node3D]:
 	var result: Array[Node3D] = []
 	for node: Node in Game.world.get_node("Entities").get_children():
-		if node.get_meta("kind", "") != "trash" or String(node.name) in TeamState.state["picked"]:
+		if not StationRules.is_loose(node, TeamState.state):
 			continue
 		var distance := StationRules.flat_distance((node as Node3D).global_position, RoachTargets.dome_center())
 		if distance > min_distance and distance <= max_distance:

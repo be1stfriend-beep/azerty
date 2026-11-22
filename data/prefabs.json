@@ -19,5 +19,6 @@
 	"door": {"model": null, "tint_group": "rust"},
 	"prop_fence": {"model": null, "tint_group": "rust"},
 	"prop_ledge": {"model": null, "tint_group": "wood", "height": 1.1},
+	"bin": {"model": null, "tint_group": "metal"},
 	"vent": {"model": null, "tint_group": "soot"}
 }
