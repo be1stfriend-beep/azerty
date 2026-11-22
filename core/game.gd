@@ -1,13 +1,102 @@
 extends Node
+## Match flow: lobby, start on both peers, return to lobby, partner lost.
 
 const VIGNETTE_SHADER_PATH := "res://shaders/vignette.gdshader"
-## Above the 3D view, below HUD layers added later.
+## Above the 3D view, below the lobby, overlays and meter.
 const POST_LAYER := 5
+const OVERVIEW_CAMERA_POSITION := Vector3(0, 24, 26)
+const OVERVIEW_CAMERA_TARGET := Vector3(0, 0, 10)
+
+var world: Node3D
+
+var _lobby: Lobby
+var _overlay: MessageOverlay
 
 
 func _ready() -> void:
 	InputSetup.register()
 	_add_post_layer()
+	_lobby = Lobby.new()
+	_lobby.hide()
+	add_child(_lobby)
+	add_child(NetMeter.new())
+	Net.connection_established.connect(_on_connection_established)
+	Net.partner_lost.connect(_on_partner_lost)
+
+
+func _notification(what: int) -> void:
+	# Closing the window disconnects cleanly so the partner sees it at once, not after a timeout.
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		Net.leave()
+
+
+func has_arg(flag: String) -> bool:
+	return flag in OS.get_cmdline_user_args() or flag in OS.get_cmdline_args()
+
+
+func show_lobby() -> void:
+	_lobby.reset()
+
+
+func start_match() -> void:
+	if not Net.is_host():
+		return
+	_rpc_start_match.rpc(Data.config().get("start_level", "main"))
+
+
+@rpc("authority", "call_local", "reliable")
+func _rpc_start_match(level_name: String) -> void:
+	_close_overlay()
+	_lobby.hide()
+	load_world(level_name)
+
+
+func load_world(level_name: String) -> Node3D:
+	_clear_world()
+	world = LevelLoader.load_level(level_name, get_tree().current_scene)
+	var camera := Camera3D.new()
+	world.add_child(camera)
+	camera.position = OVERVIEW_CAMERA_POSITION
+	camera.look_at(OVERVIEW_CAMERA_TARGET)
+	camera.make_current()
+	return world
+
+
+func return_to_lobby() -> void:
+	_clear_world()
+	_close_overlay()
+	Net.leave()
+	show_lobby()
+
+
+func _on_connection_established() -> void:
+	if Net.is_host():
+		start_match()
+
+
+func _on_partner_lost() -> void:
+	if world == null:
+		_lobby.set_status("Partner lost")
+		return
+	_close_overlay()
+	_overlay = MessageOverlay.new("Partner lost", "Back to lobby")
+	_overlay.confirmed.connect(return_to_lobby)
+	add_child(_overlay)
+
+
+func _clear_world() -> void:
+	if world == null:
+		return
+	# Detach now so a new World can take the same node name in this frame.
+	world.get_parent().remove_child(world)
+	world.queue_free()
+	world = null
+
+
+func _close_overlay() -> void:
+	if _overlay != null:
+		_overlay.queue_free()
+		_overlay = null
 
 
 func _add_post_layer() -> void:
