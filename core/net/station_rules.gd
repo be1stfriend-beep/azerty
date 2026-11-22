@@ -1,6 +1,11 @@
 class_name StationRules
 ## Pure host rules: each takes the current state and returns the next one, or {} when refused.
 
+## Ray heights above the feet: from Imad's hands to the middle of a trash item.
+const SIGHT_FROM_HEIGHT := 0.6
+const SIGHT_TO_HEIGHT := 0.3
+const WORLD_MASK := 1
+
 
 static func tongs(state: Dictionary, point: Vector3, imad_pos: Vector3, entities: Node) -> Dictionary:
 	var carried: Array = state["carried"]
@@ -16,7 +21,7 @@ static func tongs(state: Dictionary, point: Vector3, imad_pos: Vector3, entities
 		if entity.get_meta("kind", "") != "trash" or String(entity.name) in picked:
 			continue
 		var distance := flat_distance((entity as Node3D).global_position, point)
-		if distance <= best_distance:
+		if distance <= best_distance and in_sight(imad_pos, entity as Node3D):
 			best = entity
 			best_distance = distance
 	if best == null:
@@ -26,6 +31,12 @@ static func tongs(state: Dictionary, point: Vector3, imad_pos: Vector3, entities
 	next["carried_ids"].append(String(best.name))
 	next["picked"].append(String(best.name))
 	return next
+
+
+## Tongs cannot reach through walls, fences or closed doors (anything on the world layer).
+static func in_sight(from: Vector3, target: Node3D) -> bool:
+	var query := PhysicsRayQueryParameters3D.create(from + Vector3.UP * SIGHT_FROM_HEIGHT, target.global_position + Vector3.UP * SIGHT_TO_HEIGHT, WORLD_MASK)
+	return target.get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
 
 static func recycle(state: Dictionary) -> Dictionary:

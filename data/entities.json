@@ -6,5 +6,8 @@
 	"pillar": {"prefab": "pillar"},
 	"perch": {"prefab": "perch"},
 	"gate": {"prefab": "gate"},
-	"prop": {"prefab_from": "prefab"}
+	"prop": {"prefab_from": "prefab"},
+	"plate": {"prefab": "plate", "script": "res://game/world/plate.gd"},
+	"door": {"prefab": "door", "script": "res://game/world/door.gd"},
+	"vent": {"prefab": "vent", "script": "res://game/world/vent.gd"}
 }

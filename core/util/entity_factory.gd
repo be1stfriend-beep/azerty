@@ -17,7 +17,7 @@ static func spawn(kind: String, id: String, params: Dictionary) -> Node3D:
 		node.add_child(_collider(node.get_meta("collision")))
 	var rule := Data.entity(kind)
 	if rule.has("script"):
-		node = _wrap_station(node, kind, rule)
+		node = _wrap_station(node, kind, rule, params)
 	node.name = id
 	node.set_meta("kind", kind)
 	node.set_meta("prefab", prefab_id)
@@ -42,15 +42,18 @@ static func prefab_for(kind: String, params: Dictionary) -> String:
 	return ""
 
 
-## Stations get their behaviour script as the root; the visual becomes its child.
-static func _wrap_station(visual: Node3D, kind: String, rule: Dictionary) -> Node3D:
+## Scripted kinds get their behaviour script as the root; the visual becomes its child.
+## The level entry is kept as "params" metadata for per-instance settings (links, phases).
+static func _wrap_station(visual: Node3D, kind: String, rule: Dictionary, params: Dictionary) -> Node3D:
 	var script := load(rule["script"]) as GDScript
-	var station := script.new() as Interactable
+	var station := script.new() as Node3D
 	if station == null:
-		push_error("EntityFactory: %s is not an Interactable" % rule["script"])
+		push_error("EntityFactory: %s is not a Node3D script" % rule["script"])
 		return visual
-	station.kind = kind
-	station.interact_range = rule.get("range", 0.0)
+	if station is Interactable:
+		(station as Interactable).kind = kind
+		(station as Interactable).interact_range = rule.get("range", 0.0)
+	station.set_meta("params", params)
 	visual.name = "Visual"
 	station.add_child(visual)
 	return station

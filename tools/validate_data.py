@@ -55,9 +55,54 @@ def check(tables: dict, levels: dict) -> list[str]:
     return errors
 
 
+PLATE_EFFECTS = ("", "vents_off")
+
+
+def jump_heights(balance: dict) -> tuple[float, float]:
+    """Peak heights (solo, merged) from v^2 / (2 g): the co-op ledges sit between them."""
+    gravity = balance["gravity"]
+    solo = balance["bjorn_jump"] ** 2 / (2 * gravity)
+    merged = (balance["bjorn_jump"] * balance["merged_jump_mult"]) ** 2 / (2 * gravity)
+    return solo, merged
+
+
+def check_puzzles(tables: dict, levels: dict) -> list[str]:
+    errors: list[str] = []
+    solo, merged = jump_heights(tables["balance"])
+    ledge = tables["prefabs"].get("prop_ledge", {}).get("height")
+    if ledge is not None and not merged < ledge < solo:
+        errors.append(f"prop_ledge height {ledge} must be between merged jump {merged:.2f} and solo jump {solo:.2f}")
+    for level_name, level in levels.items():
+        counters: dict[str, int] = {}
+        ids: dict[str, dict] = {}
+        for entity in level.get("entities", []):
+            kind = entity.get("kind")
+            index = counters.get(kind, 0)
+            counters[kind] = index + 1
+            ids[f"{kind}_{index}"] = entity
+        for entity_id, entity in ids.items():
+            where = f"level {level_name} {entity_id}"
+            if entity["kind"] == "door":
+                links = entity.get("links", [])
+                if not links:
+                    errors.append(f"{where}: door has no links")
+                for link in links:
+                    if ids.get(link, {}).get("kind") != "plate":
+                        errors.append(f"{where}: link {link} is not a plate")
+            if entity["kind"] == "plate":
+                if entity.get("activates", "") not in PLATE_EFFECTS:
+                    errors.append(f"{where}: unknown activates {entity.get('activates')}")
+                height = entity["pos"][1]
+                if height > 0 and not merged < height < solo:
+                    errors.append(f"{where}: raised plate at {height} m must be between {merged:.2f} and {solo:.2f}")
+    return errors
+
+
 def main() -> int:
     tables, levels, errors = load_all()
     errors += check(tables, levels)
+    if not errors:
+        errors += check_puzzles(tables, levels)
     for error in errors:
         print("ERROR:", error)
     if errors:

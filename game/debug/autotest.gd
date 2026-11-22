@@ -45,6 +45,7 @@ func _run() -> void:
 	await _test_air()
 	_test_roach_bait()
 	await _test_roach_flee()
+	await AutotestPuzzles.run(self)
 	print("autotest: %d PASS, %d FAIL" % [_passes, _failures])
 	get_tree().quit(1 if _failures > 0 else 0)
 

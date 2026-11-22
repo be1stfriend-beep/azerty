@@ -32,5 +32,13 @@
 	"roach_bait_range": 25,
 	"roach_tower_guard_range": 20,
 	"air_sync_hz": 4,
-	"knockout_drop_radius": 2.0
+	"knockout_drop_radius": 2.0,
+	"vent_on": 3.0,
+	"vent_off": 3.0,
+	"vent_warn": 0.8,
+	"vent_air_hit": 12,
+	"vent_push": 3.0,
+	"vent_radius": 2.6,
+	"valve_seconds": 25,
+	"plate_radius": 1.3
 }

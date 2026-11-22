@@ -14,5 +14,10 @@
 	"gate": {"model": null, "tint_group": "rust"},
 	"recycler": {"model": null, "tint_group": "teal"},
 	"bench": {"model": null, "tint_group": "wood"},
-	"tower": {"model": null, "tint_group": "concrete"}
+	"tower": {"model": null, "tint_group": "concrete"},
+	"plate": {"model": null, "tint_group": "danger"},
+	"door": {"model": null, "tint_group": "rust"},
+	"prop_fence": {"model": null, "tint_group": "rust"},
+	"prop_ledge": {"model": null, "tint_group": "wood", "height": 1.1},
+	"vent": {"model": null, "tint_group": "soot"}
 }
