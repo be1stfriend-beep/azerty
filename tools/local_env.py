@@ -36,5 +36,5 @@ def ensure_imported(godot: str) -> None:
     """A fresh clone has no .godot cache, so models would not load until assets are imported once."""
     if (ROOT / ".godot" / "imported").exists():
         return
-    print("First run on this machine: importing assets (one time) ...")
+    print("First run on this machine: importing assets (one time) ...", flush=True)
     subprocess.run([godot, "--headless", "--path", str(ROOT), "--import"], cwd=ROOT, timeout=IMPORT_TIMEOUT)
