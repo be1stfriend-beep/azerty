@@ -1,4 +1,6 @@
 {
 	"title": "Piggyback Planet",
-	"start_level": "slice"
+	"start_level": "slice",
+	"bench_recipes": ["mask"],
+	"bench_later": ["filter"]
 }

@@ -68,6 +68,7 @@ func _local_move(delta: float) -> void:
 		velocity.y -= _gravity * delta
 	_action_input(delta)
 	move_and_slide()
+	DomeGate.hold_inside(self)
 	if direction.length() > MOVE_DEADZONE:
 		rotation.y = lerp_angle(rotation.y, atan2(direction.x, direction.z), TURN_SPEED * delta)
 

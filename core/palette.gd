@@ -46,6 +46,9 @@ const TINTS: Dictionary = {
 	"roach_eye": RUST,
 	"roach_eye_hot": DANGER,
 	"tower_ring": RESTORED_TEAL,
+	"mask": RESTORED_TEAL,
+	"post_locked": DANGER,
+	"post_open": RESTORED_GRASS,
 }
 
 ## Groups drawn with the character variant: no dust, stronger rim.
@@ -55,6 +58,8 @@ const CHARACTER_GROUPS: Array[String] = [
 	"roach_shell", "roach_belly", "roach_eye", "roach_eye_hot",
 	# The tower ring sits where restoration fades to zero, so it must not be dusted.
 	"tower_ring",
+	# The mask is worn by Imad; the Dome posts must read as lit signals through the haze.
+	"mask", "post_locked", "post_open",
 ]
 
 

@@ -39,18 +39,16 @@ static func in_sight(from: Vector3, target: Node3D) -> bool:
 	return target.get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
 
-static func recycle(state: Dictionary) -> Dictionary:
+## One item per call, so the Recycler can feed the hopper one piece at a time.
+static func recycle_one(state: Dictionary) -> Dictionary:
 	var carried: Array = state["carried"]
 	if carried.is_empty():
 		return {}
 	var next := state.duplicate(true)
-	var stash: Dictionary = next["stash"]
-	for item_id: String in carried:
-		var item := Data.item(item_id)
-		var material: String = item.get("material", "")
-		stash[material] = int(stash.get(material, 0)) + int(item.get("yield", 0))
-	next["carried"] = []
-	next["carried_ids"] = []
+	var item := Data.item(next["carried"].pop_front())
+	next["carried_ids"].pop_front()
+	var material: String = item.get("material", "")
+	next["stash"][material] = int(next["stash"].get(material, 0)) + int(item.get("yield", 0))
 	return next
 
 

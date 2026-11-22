@@ -139,6 +139,8 @@ func _spawn_players() -> void:
 	world.add_child(TrashHider.new())
 	world.add_child(InteractionCues.new())
 	world.add_child(AirSystem.new())
+	if world.get_meta("mask_gate", false):
+		world.add_child(DomeGate.new())
 	var roach := Cockroach.new()
 	var roach_marker := world.get_node_or_null("Markers/roach") as Node3D
 	if roach_marker != null:

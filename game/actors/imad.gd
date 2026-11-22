@@ -18,6 +18,7 @@ var _reach: float
 var _aim_elapsed := 0.0
 var _reticle: MeshInstance3D
 var _station: Interactable
+var _shown_carried: Array = []
 
 
 func _init() -> void:
@@ -33,6 +34,7 @@ func _ready() -> void:
 	add_child(_reticle)
 	Events.mount_changed.connect(_on_mount_changed)
 	Events.trash_picked.connect(_on_trash_picked)
+	Events.state_changed.connect(_on_state_changed)
 
 
 func _physics_process(delta: float) -> void:
@@ -133,6 +135,14 @@ func _on_trash_picked(id: String) -> void:
 	var trash := get_parent().get_node_or_null("Entities/%s" % id) as Node3D
 	if trash != null:
 		(rig as CrawlRig).reach_tongs(trash.global_position)
+
+
+func _on_state_changed() -> void:
+	var carried: Array = TeamState.state.get("carried", [])
+	if carried != _shown_carried:
+		_shown_carried = carried.duplicate()
+		(rig as CrawlRig).show_carried(carried)
+	(rig as CrawlRig).wear_mask(DomeGate.has_mask())
 
 
 func _on_mount_changed(mount: String) -> void:

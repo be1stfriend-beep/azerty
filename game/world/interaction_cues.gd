@@ -60,8 +60,12 @@ func _update_prompt(imad: Imad, current: Dictionary) -> void:
 		_show_prompt(Data.hint("prompt_full"), body.global_position + Vector3.UP * FULL_PROMPT_HEIGHT)
 		return
 	var station := Interaction.nearest_station(body.global_position)
-	if station != null and STATION_PROMPTS.has(station.kind):
-		_show_prompt(Data.hint(STATION_PROMPTS[station.kind]), station.global_position + Vector3.UP * PROMPT_HEIGHT)
+	if station == null or not STATION_PROMPTS.has(station.kind):
+		return
+	var key: String = STATION_PROMPTS[station.kind]
+	if station.kind == "recycler" and (TeamState.state.get("carried", []) as Array).is_empty():
+		key = "prompt_recycler_empty"
+	_show_prompt(Data.hint(key), station.global_position + Vector3.UP * PROMPT_HEIGHT)
 
 
 func _show_prompt(text: String, at: Vector3) -> void:

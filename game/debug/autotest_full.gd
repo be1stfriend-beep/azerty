@@ -20,7 +20,7 @@ func _run() -> void:
 	_imad_id = Net.peer_for_character(Characters.Character.IMAD)
 	_controller = Game.world.get_node("MountController") as MountController
 	await _test_watchdog()
-	_collect_and_recycle()
+	await _collect_and_recycle()
 	_craft("filter")
 	await _test_tower()
 	_craft("broomstick")
@@ -62,15 +62,16 @@ func _collect_and_recycle() -> void:
 		var carried := (TeamState.state["carried"] as Array).size()
 		picked += carried - before
 		if carried >= int(Data.balance("carry_capacity")):
-			_recycle()
+			await _recycle()
 	_check("collect", picked > 0, "nothing picked")
-	_recycle()
+	await _recycle()
 	_check("recycle", _affordable(), "stash %s cannot pay for filter and broomstick" % TeamState.state["stash"])
 
 
 func _recycle() -> void:
 	_place_imad_at("recycler_0")
 	TeamState._server_recycle("recycler_0", _imad_id)
+	await _wait_for(func() -> bool: return (TeamState.state["carried"] as Array).is_empty(), STEP_TIMEOUT)
 
 
 func _affordable() -> bool:

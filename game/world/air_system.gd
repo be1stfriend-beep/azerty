@@ -41,7 +41,8 @@ func _process(delta: float) -> void:
 		var player := Game.player(character)
 		if player != null and not is_safe(player.global_position):
 			all_safe = false
-	var rate: float = Data.balance("air_refill") if all_safe else -float(Data.balance("air_drain"))
+	var drain := float(Data.balance("air_drain")) * (float(Data.balance("air_drain_mask_mult")) if DomeGate.has_mask() else 1.0)
+	var rate: float = Data.balance("air_refill") if all_safe else -drain
 	_air = clampf(_air + rate * delta, 0.0, _air_max)
 	if _air <= 0.0:
 		_out_of_air()

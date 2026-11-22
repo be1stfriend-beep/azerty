@@ -1,6 +1,7 @@
 class_name Hud
 extends CanvasLayer
-## Code-built HUD: air, carried and tool, stash, name tag, tower hold bar, invention card.
+## Code-built HUD: air, carried and tool, stash, name tag, tower hold bar. Recycled material
+## blocks fly from the Recycler chute into their stash counter.
 
 const LAYER := 9
 const FONT_SIZE := 32
@@ -11,8 +12,10 @@ const HOLD_BAR_SIZE := Vector2(520, 28)
 const SQUARE_SIZE := Vector2(30, 30)
 ## Leaves room for the NET meter button in the top-right corner.
 const STASH_RIGHT_GAP := 130.0
-const CARD_SECONDS := 2.5
 const BAR_BACK := Color(0.0, 0.0, 0.0, 0.45)
+const FLY_SECONDS := 0.5
+const COUNTER_POP := 1.4
+const COUNTER_POP_SECONDS := 0.1
 
 var _root: Control
 var _air_fill: ColorRect
@@ -20,12 +23,12 @@ var _carried: Label
 var _objective: Label
 var _name_tag: Label
 var _perch_hint: Label
-var _stash: HBoxContainer
+var _stash: VBoxContainer
 var _hold_back: ColorRect
 var _hold_fill: ColorRect
-var _card: PanelContainer
-var _card_label: Label
-var _card_tween: Tween
+## Material id to its square and count, so a flying block knows where to land.
+var _squares: Dictionary = {}
+var _counts: Dictionary = {}
 
 
 func _ready() -> void:
@@ -45,7 +48,8 @@ func _ready() -> void:
 	_perch_hint = _label(Control.PRESET_CENTER_TOP, Vector2(0, MARGIN + FONT_SIZE * 3.2))
 	_perch_hint.text = "Climb down: Bjorn stands next to the perch, then press Interact"
 	_carried = _label(Control.PRESET_CENTER_BOTTOM, Vector2(0, -MARGIN - FONT_SIZE * 1.5))
-	_stash = HBoxContainer.new()
+	# A column, so the material names never run into the centred objective line.
+	_stash = VBoxContainer.new()
 	_stash.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	_stash.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_stash.offset_left = -STASH_RIGHT_GAP
@@ -53,18 +57,10 @@ func _ready() -> void:
 	_stash.offset_top = MARGIN
 	_stash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_stash)
-	_card = PanelContainer.new()
-	_card.set_anchors_preset(Control.PRESET_CENTER)
-	_card.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_card.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_card.theme = UiTheme.build()
-	_card.visible = false
-	_card_label = Label.new()
-	_card.add_child(_card_label)
-	_root.add_child(_card)
+	_root.add_child(InventionCard.new())
 	Events.state_changed.connect(_refresh)
-	Events.item_crafted.connect(_show_card)
 	Events.air_changed.connect(_refresh_air)
+	Events.material_produced.connect(_fly_block)
 	_refresh()
 
 
@@ -94,28 +90,47 @@ func _refresh_air(value: float) -> void:
 	_air_fill.color = Palette.DANGER if ratio < AIR_LOW else Palette.RESTORED_TEAL
 
 
+## Entries are kept, not rebuilt, so a block in flight still finds its counter.
 func _refresh_stash(stash: Dictionary) -> void:
-	for child in _stash.get_children():
-		child.queue_free()
 	for material: String in stash:
-		var square := ColorRect.new()
-		square.custom_minimum_size = SQUARE_SIZE
-		square.color = Palette.tint(material)
-		square.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		_stash.add_child(square)
-		var count := Label.new()
-		count.text = "%d " % int(stash[material])
-		_stash.add_child(count)
+		if not _squares.has(material):
+			var row := HBoxContainer.new()
+			row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_stash.add_child(row)
+			var square := ColorRect.new()
+			square.custom_minimum_size = SQUARE_SIZE
+			square.pivot_offset = SQUARE_SIZE * 0.5
+			square.color = Palette.tint(material)
+			square.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			square.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			row.add_child(square)
+			_squares[material] = square
+			var count := Label.new()
+			row.add_child(count)
+			_counts[material] = count
+		(_counts[material] as Label).text = "%s %d" % [material, int(stash[material])]
 
 
-func _show_card(recipe_id: String) -> void:
-	_card_label.text = "INVENTED: %s" % Data.recipe(recipe_id).get("invention_name", recipe_id)
-	_card.visible = true
-	if _card_tween != null and _card_tween.is_valid():
-		_card_tween.kill()
-	_card_tween = create_tween()
-	_card_tween.tween_interval(CARD_SECONDS)
-	_card_tween.tween_callback(_card.hide)
+func _fly_block(material: String, world_position: Vector3) -> void:
+	var camera := get_viewport().get_camera_3d()
+	if camera == null or camera.is_position_behind(world_position):
+		return
+	var block := ColorRect.new()
+	block.size = SQUARE_SIZE
+	block.color = Palette.tint(material)
+	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	block.position = camera.unproject_position(world_position) - SQUARE_SIZE * 0.5
+	_root.add_child(block)
+	var square := _squares.get(material) as Control
+	var target: Vector2 = square.global_position if square != null else _stash.global_position
+	var tween := block.create_tween()
+	tween.tween_property(block, "global_position", target, FLY_SECONDS).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_callback(block.queue_free)
+	if square != null:
+		var pop := square.create_tween()
+		pop.tween_interval(FLY_SECONDS)
+		pop.tween_property(square, "scale", Vector2.ONE * COUNTER_POP, COUNTER_POP_SECONDS)
+		pop.tween_property(square, "scale", Vector2.ONE, COUNTER_POP_SECONDS)
 
 
 func _bar(preset: Control.LayoutPreset, offset: Vector2, bar_size: Vector2) -> ColorRect:

@@ -39,7 +39,7 @@ func _run() -> void:
 	print("autotest: fake peer ids bjorn=%d imad=%d" % [_bjorn_id, _imad_id])
 	await _test_mount()
 	_test_pickup()
-	_test_recycle()
+	await _test_recycle()
 	_test_craft()
 	await _test_tower()
 	await _test_air()
@@ -87,6 +87,7 @@ func _test_pickup() -> void:
 func _test_recycle() -> void:
 	_place_imad_at("recycler_0")
 	TeamState._server_recycle("recycler_0", _imad_id)
+	await _wait_for(func() -> bool: return (TeamState.state["carried"] as Array).is_empty(), STEP_TIMEOUT)
 	var carried := (TeamState.state["carried"] as Array).size()
 	var stash: Dictionary = TeamState.state["stash"]
 	_check("recycle", carried == 0 and not stash.is_empty(), "carried %d, stash %s" % [carried, stash])
@@ -116,6 +117,10 @@ func _test_air() -> void:
 	var bjorn := Game.player(Characters.Character.BJORN)
 	var imad := Game.player(Characters.Character.IMAD)
 	var dropped_id := _pick_one_trash(imad)
+	var inventory: Dictionary = (TeamState.state["inventory"] as Dictionary).duplicate()
+	inventory[Objective.SLICE_RECIPE] = 1
+	TeamState.set_values({"inventory": inventory})
+	print("autotest: gave the mask through TeamState so the Dome edge lets the team out")
 	bjorn.respawn(OUTSIDE)
 	imad.respawn(OUTSIDE + BESIDE_BJORN)
 	var start := float(TeamState.state["air"])

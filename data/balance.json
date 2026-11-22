@@ -53,5 +53,7 @@
 	"recycle_seconds_per_item": 0.3,
 	"slice_outside_trash_needed": 5,
 	"air_drain_mask_mult": 0.6,
-	"objective_recycle_at": 3
+	"objective_recycle_at": 3,
+	"mask_gate_push": 0.5,
+	"mask_gate_message_seconds": 5
 }

@@ -39,6 +39,7 @@ static func load_level(level_name: String, parent: Node) -> Node3D:
 		var center: Array = level["dome"]
 		var dome := Vector3(center[0], center[1], center[2])
 		world.set_meta("dome", dome)
+		world.set_meta("mask_gate", level.get("mask_gate", false))
 		var ring := ground_ring(Data.balance("dome_radius"), "bone")
 		ring.name = "DomeRing"
 		ring.position = dome

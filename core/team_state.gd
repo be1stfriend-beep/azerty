@@ -134,10 +134,8 @@ func _server_tool_next(sender: int) -> void:
 
 func _server_recycle(station_id: String, sender: int) -> void:
 	var station := Interactable.near_team_body(station_id, "recycler")
-	if not _is_imad(sender) or station == null:
-		return
-	if _commit_if(StationRules.recycle(state)):
-		station.rpc("play_effect")
+	if _is_imad(sender) and station != null:
+		station.call("server_start")
 
 
 func _server_craft(recipe_id: String, sender: int) -> void:

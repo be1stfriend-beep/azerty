@@ -27,6 +27,14 @@ const TONGS_TIP_HEIGHT := 0.25
 const SACK_POSITION := Vector3(0.2, 0.08, -0.36)
 const SACK_POP := 1.3
 const SACK_POP_SECONDS := 0.1
+const PILE_SCALE := 0.4
+const PILE_SPACING := 0.16
+const PILE_PER_ROW := 3
+const PILE_BASE := 0.12
+## Each piece turned a little further so the heap does not look stamped.
+const PILE_TURN_DEG := 47.0
+const MASK_POSITION := Vector3(0, 0.58, 0.17)
+const MASK_SCALE := 0.7
 
 ## His own ground shadow would float in mid-air on Bjorn's back.
 var riding := false:
@@ -39,6 +47,8 @@ var hands: Array[Node3D] = []
 var tongs: Node3D
 var sack: Node3D
 
+var _pile: Node3D
+var _mask: Node3D
 var _tongs_stowed: Transform3D
 var _tongs_tween: Tween
 var _full_speed: float
@@ -69,8 +79,33 @@ static func build() -> CrawlRig:
 	t.add_child(rig.tongs)
 	rig._tongs_stowed = rig.tongs.transform
 	rig.sack = ProcProps.part(t, ProcProps.sphere(0.2), SACK_POSITION, "char_white", Vector3.ZERO, Vector3(1, 0.9, 0.9))
+	rig._pile = Node3D.new()
+	rig._pile.position = SACK_POSITION
+	t.add_child(rig._pile)
+	rig._mask = MaskModel.build()
+	rig._mask.position = MASK_POSITION
+	rig._mask.scale = Vector3.ONE * MASK_SCALE
+	rig._mask.visible = false
+	t.add_child(rig._mask)
 	Style.apply(rig)
 	return rig
+
+
+## One small prop per carried item, heaped on the sack so the load reads from across the screen.
+func show_carried(items: Array) -> void:
+	for child in _pile.get_children():
+		child.queue_free()
+	for i in items.size():
+		var prop := ProcProps.build(String(Data.item(items[i]).get("prefab", "")))
+		prop.scale = Vector3.ONE * PILE_SCALE
+		prop.position = Vector3((i % PILE_PER_ROW - 1) * PILE_SPACING, PILE_BASE + floorf(i / float(PILE_PER_ROW)) * PILE_SPACING, 0.0)
+		prop.rotation_degrees.y = i * PILE_TURN_DEG
+		Style.apply(prop)
+		_pile.add_child(prop)
+
+
+func wear_mask(on: bool) -> void:
+	_mask.visible = on
 
 
 ## Shoots the tongs out to a world point and back; the sack pops when they return.
