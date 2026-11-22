@@ -2,6 +2,7 @@ class_name EntityFactory
 ## Turns a level entry into a styled node. Models are optional; procedural props are the fallback.
 
 const WORLD_LAYER := 1
+const MIN_MODEL_SIZE := 0.001
 
 
 static func spawn(kind: String, id: String, params: Dictionary) -> Node3D:
@@ -10,10 +11,11 @@ static func spawn(kind: String, id: String, params: Dictionary) -> Node3D:
 	var node := _from_model(prefab)
 	if node == null:
 		node = ProcProps.build(prefab_id)
+		Style.apply(node)
 	else:
-		node.set_meta("tint_group", prefab.get("tint_group", "concrete"))
-		_copy_fallback_collision(node, prefab_id)
-	Style.apply(node)
+		Style.apply_model(node, prefab.get("tint_group", "concrete"))
+		if not prefab.has("solid"):
+			_copy_fallback_collision(node, prefab_id)
 	if node.has_meta("collision"):
 		node.add_child(_collider(node.get_meta("collision")))
 	var rule := Data.entity(kind)
@@ -71,12 +73,20 @@ static func _from_model(prefab: Dictionary) -> Node3D:
 	if model == null:
 		return null
 	_strip_collision(model)
-	model.scale = Vector3.ONE * float(prefab.get("scale", 1.0))
+	# Packs disagree on units: fit_height sizes a model in metres, scale is the raw multiplier.
+	var scale := float(prefab.get("scale", 1.0))
+	if prefab.has("fit_height"):
+		var raw_height := _mesh_bounds(model, Transform3D(Basis(), Vector3.ZERO)).size.y
+		scale = float(prefab["fit_height"]) / maxf(raw_height, MIN_MODEL_SIZE)
+	model.scale = Vector3.ONE * scale
 	# Packs disagree on pivots: put every model's bottom centre on the entity origin, like the procedural props.
 	var bounds := _mesh_bounds(model, model.transform)
 	model.position = -Vector3(bounds.get_center().x, bounds.position.y, bounds.get_center().z)
 	var root := Node3D.new()
 	root.add_child(model)
+	if prefab.get("solid", false):
+		var size := bounds.size * float(prefab.get("solid_shrink", 1.0))
+		root.set_meta("collision", {"shape": "box", "size": size, "center": Vector3(0, size.y * 0.5, 0)})
 	return root
 
 

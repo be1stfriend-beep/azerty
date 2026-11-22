@@ -17,6 +17,8 @@ const SKIN_A := Color(0.945, 0.827, 0.745)
 const SKIN_B := Color(0.690, 0.478, 0.333)
 const ROACH_SHELL := Color(0.227, 0.165, 0.247)
 const DANGER := Color(0.898, 0.204, 0.165)
+## The poisoned air outside the Dome: a muddy olive-brown, darker and sicklier than the haze.
+const SMOG := Color(0.420, 0.384, 0.239)
 
 ## Tint groups referenced by prefabs.json and the builders. Unknown groups fall back to CONCRETE.
 const TINTS: Dictionary = {

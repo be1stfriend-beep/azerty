@@ -3,5 +3,7 @@
 	"can": {"name": "Tin Can", "material": "metal", "yield": 1, "prefab": "trash_can"},
 	"cardboard": {"name": "Cardboard Box", "material": "paper", "yield": 2, "prefab": "trash_cardboard"},
 	"apple_core": {"name": "Apple Core", "material": "compost", "yield": 1, "prefab": "trash_apple_core"},
-	"plank": {"name": "Plank", "material": "wood", "yield": 1, "prefab": "trash_plank"}
+	"plank": {"name": "Plank", "material": "wood", "yield": 1, "prefab": "trash_plank"},
+	"bag": {"name": "Trash Bag", "material": "plastic", "yield": 2, "prefab": "trash_bag"},
+	"pizza_box": {"name": "Pizza Box", "material": "paper", "yield": 1, "prefab": "trash_pizza_box"}
 }

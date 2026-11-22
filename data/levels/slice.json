@@ -551,6 +551,1218 @@
 				0.0,
 				26.0
 			]
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				17.0,
+				0.0,
+				6.0
+			],
+			"rot": 20.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				17.8,
+				0.0,
+				7.2
+			],
+			"rot": -30.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				16.4,
+				0.0,
+				7.6
+			],
+			"rot": 70.0
+		},
+		{
+			"kind": "trash",
+			"item": "cardboard",
+			"pos": [
+				-17.0,
+				0.0,
+				4.0
+			],
+			"rot": 10.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				-18.0,
+				0.0,
+				5.2
+			],
+			"rot": -50.0
+		},
+		{
+			"kind": "trash",
+			"item": "pizza_box",
+			"pos": [
+				-16.6,
+				0.0,
+				5.9
+			],
+			"rot": 35.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				25.5,
+				0.0,
+				22.8
+			],
+			"rot": 15.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				26.5,
+				0.0,
+				23.6
+			],
+			"rot": -40.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				24.6,
+				0.0,
+				24.2
+			],
+			"rot": 80.0
+		},
+		{
+			"kind": "trash",
+			"item": "cardboard",
+			"pos": [
+				18.5,
+				0.0,
+				29.5
+			],
+			"rot": 20.0
+		},
+		{
+			"kind": "trash",
+			"item": "plank",
+			"pos": [
+				18.2,
+				0.0,
+				30.8
+			],
+			"rot": -60.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				27.2,
+				0.0,
+				36.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "trash",
+			"item": "pizza_box",
+			"pos": [
+				28.2,
+				0.0,
+				36.8
+			],
+			"rot": 45.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				29.4,
+				0.0,
+				37.4
+			],
+			"rot": -20.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				34.5,
+				0.0,
+				26.5
+			],
+			"rot": 10.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				35.4,
+				0.0,
+				27.6
+			],
+			"rot": -70.0
+		},
+		{
+			"kind": "trash",
+			"item": "apple_core",
+			"pos": [
+				-21.5,
+				0.0,
+				18.4
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "trash",
+			"item": "plank",
+			"pos": [
+				-22.6,
+				0.0,
+				19.2
+			],
+			"rot": 50.0
+		},
+		{
+			"kind": "trash",
+			"item": "apple_core",
+			"pos": [
+				-20.6,
+				0.0,
+				19.8
+			],
+			"rot": -30.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				-27.6,
+				0.0,
+				25.0
+			],
+			"rot": 15.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				-26.6,
+				0.0,
+				26.2
+			],
+			"rot": 60.0
+		},
+		{
+			"kind": "trash",
+			"item": "plank",
+			"pos": [
+				-24.4,
+				0.0,
+				28.8
+			],
+			"rot": -10.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				-23.4,
+				0.0,
+				29.8
+			],
+			"rot": 30.0
+		},
+		{
+			"kind": "trash",
+			"item": "cardboard",
+			"pos": [
+				-29.6,
+				0.0,
+				32.4
+			],
+			"rot": 25.0
+		},
+		{
+			"kind": "trash",
+			"item": "apple_core",
+			"pos": [
+				-19.5,
+				0.0,
+				34.8
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				-20.4,
+				0.0,
+				35.8
+			],
+			"rot": -45.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				0.0,
+				0.0,
+				49.5
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				1.0,
+				0.0,
+				50.5
+			],
+			"rot": 40.0
+		},
+		{
+			"kind": "trash",
+			"item": "pizza_box",
+			"pos": [
+				-1.1,
+				0.0,
+				51.0
+			],
+			"rot": -20.0
+		},
+		{
+			"kind": "trash",
+			"item": "plank",
+			"pos": [
+				6.4,
+				0.0,
+				56.0
+			],
+			"rot": 10.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				7.4,
+				0.0,
+				57.0
+			],
+			"rot": -30.0
+		},
+		{
+			"kind": "trash",
+			"item": "cardboard",
+			"pos": [
+				5.6,
+				0.0,
+				57.6
+			],
+			"rot": 60.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				-5.2,
+				0.0,
+				61.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				-4.2,
+				0.0,
+				62.0
+			],
+			"rot": 35.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				-6.2,
+				0.0,
+				62.3
+			],
+			"rot": -15.0
+		},
+		{
+			"kind": "trash",
+			"item": "cardboard",
+			"pos": [
+				2.6,
+				0.0,
+				64.6
+			],
+			"rot": 20.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				3.6,
+				0.0,
+				65.4
+			],
+			"rot": -40.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				17.0,
+				0.0,
+				55.5
+			],
+			"rot": 5.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				18.0,
+				0.0,
+				56.5
+			],
+			"rot": -25.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				-21.0,
+				0.0,
+				46.0
+			],
+			"rot": 30.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				-20.0,
+				0.0,
+				47.0
+			],
+			"rot": -10.0
+		},
+		{
+			"kind": "trash",
+			"item": "apple_core",
+			"pos": [
+				-22.0,
+				0.0,
+				47.4
+			],
+			"rot": 50.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				-1.0,
+				0.0,
+				-20.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				0.6,
+				0.0,
+				-20.8
+			],
+			"rot": 40.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				-2.2,
+				0.0,
+				-21.2
+			],
+			"rot": -20.0
+		},
+		{
+			"kind": "trash",
+			"item": "cardboard",
+			"pos": [
+				3.2,
+				0.0,
+				-23.6
+			],
+			"rot": 15.0
+		},
+		{
+			"kind": "trash",
+			"item": "pizza_box",
+			"pos": [
+				4.4,
+				0.0,
+				-22.6
+			],
+			"rot": -35.0
+		},
+		{
+			"kind": "trash",
+			"item": "bag",
+			"pos": [
+				-4.4,
+				0.0,
+				-27.6
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "trash",
+			"item": "can",
+			"pos": [
+				-3.2,
+				0.0,
+				-28.6
+			],
+			"rot": 60.0
+		},
+		{
+			"kind": "trash",
+			"item": "apple_core",
+			"pos": [
+				0.0,
+				0.0,
+				-26.2
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "trash",
+			"item": "bottle",
+			"pos": [
+				7.2,
+				0.0,
+				-27.0
+			],
+			"rot": 25.0
+		},
+		{
+			"kind": "trash",
+			"item": "plank",
+			"pos": [
+				-9.6,
+				0.0,
+				-21.6
+			],
+			"rot": -40.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_container_a",
+			"pos": [
+				22.0,
+				0.0,
+				16.0
+			],
+			"rot": 90.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_container_b",
+			"pos": [
+				30.0,
+				0.0,
+				20.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_container_c",
+			"pos": [
+				22.5,
+				0.0,
+				33.0
+			],
+			"rot": 12.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_container_a",
+			"pos": [
+				31.0,
+				0.0,
+				33.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_container_b",
+			"pos": [
+				31.0,
+				2.6,
+				33.0
+			],
+			"rot": 4.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_container_c",
+			"pos": [
+				26.0,
+				0.0,
+				41.0
+			],
+			"rot": 90.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dumpster",
+			"pos": [
+				18.0,
+				0.0,
+				24.0
+			],
+			"rot": -20.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_full_bin",
+			"pos": [
+				28.5,
+				0.0,
+				26.5
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bag_pile",
+			"pos": [
+				26.5,
+				0.0,
+				21.0
+			],
+			"rot": 30.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bag_pile",
+			"pos": [
+				18.5,
+				0.0,
+				36.0
+			],
+			"rot": -10.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_egg_carton",
+			"pos": [
+				33.0,
+				0.0,
+				24.0
+			],
+			"rot": 40.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				-20.0,
+				0.0,
+				14.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				-25.5,
+				0.0,
+				19.5
+			],
+			"rot": 60.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				-18.5,
+				0.0,
+				24.5
+			],
+			"rot": 120.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				-28.5,
+				0.0,
+				27.5
+			],
+			"rot": 200.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				-22.0,
+				0.0,
+				33.0
+			],
+			"rot": 30.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				-30.5,
+				0.0,
+				37.0
+			],
+			"rot": 90.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				-16.5,
+				0.0,
+				39.0
+			],
+			"rot": 160.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_rock_b",
+			"pos": [
+				-24.5,
+				0.0,
+				23.5
+			],
+			"rot": 20.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_rock_a",
+			"pos": [
+				-27.5,
+				0.0,
+				31.5
+			],
+			"rot": 70.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_rock_a",
+			"pos": [
+				-17.5,
+				0.0,
+				30.0
+			],
+			"rot": 140.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_log",
+			"pos": [
+				-23.0,
+				0.0,
+				16.0
+			],
+			"rot": 40.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_log",
+			"pos": [
+				-26.5,
+				0.0,
+				35.0
+			],
+			"rot": -30.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_stump",
+			"pos": [
+				-21.2,
+				0.0,
+				27.6
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_stump",
+			"pos": [
+				-29.5,
+				0.0,
+				22.0
+			],
+			"rot": 45.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_ruin_a",
+			"pos": [
+				-12.0,
+				0.0,
+				58.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_ruin_b",
+			"pos": [
+				13.0,
+				0.0,
+				62.0
+			],
+			"rot": 180.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_ruin_c",
+			"pos": [
+				0.0,
+				0.0,
+				74.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_ruin_d",
+			"pos": [
+				-26.0,
+				0.0,
+				58.0
+			],
+			"rot": 90.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_chimney",
+			"pos": [
+				8.0,
+				0.0,
+				70.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_chimney",
+			"pos": [
+				-8.0,
+				0.0,
+				70.0
+			],
+			"rot": 30.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_tank",
+			"pos": [
+				-4.0,
+				0.0,
+				54.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_tank",
+			"pos": [
+				20.0,
+				0.0,
+				50.0
+			],
+			"rot": 45.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_windmill",
+			"pos": [
+				24.0,
+				0.0,
+				66.0
+			],
+			"rot": 20.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_solar_wreck",
+			"pos": [
+				5.0,
+				0.0,
+				50.5
+			],
+			"rot": 25.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_solar_wreck",
+			"pos": [
+				6.8,
+				0.0,
+				52.3
+			],
+			"rot": -15.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dumpster",
+			"pos": [
+				-16.0,
+				0.0,
+				49.0
+			],
+			"rot": 10.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bag_pile",
+			"pos": [
+				-2.0,
+				0.0,
+				58.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bag_pile",
+			"pos": [
+				10.0,
+				0.0,
+				54.0
+			],
+			"rot": 90.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dumpster",
+			"pos": [
+				-6.5,
+				0.0,
+				-24.0
+			],
+			"rot": 10.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dumpster",
+			"pos": [
+				5.0,
+				0.0,
+				-30.0
+			],
+			"rot": -15.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bag_pile",
+			"pos": [
+				-3.0,
+				0.0,
+				-24.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bag_pile",
+			"pos": [
+				2.0,
+				0.0,
+				-27.5
+			],
+			"rot": 60.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bag_pile",
+			"pos": [
+				8.5,
+				0.0,
+				-22.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_full_bin",
+			"pos": [
+				-10.0,
+				0.0,
+				-28.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_full_bin",
+			"pos": [
+				11.0,
+				0.0,
+				-29.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_container_a",
+			"pos": [
+				-15.0,
+				0.0,
+				-31.0
+			],
+			"rot": 60.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_rock_b",
+			"pos": [
+				13.0,
+				0.0,
+				-22.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_tyre",
+			"pos": [
+				-9.0,
+				0.0,
+				-18.5
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_tyre",
+			"pos": [
+				9.0,
+				0.0,
+				-17.5
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_tyre",
+			"pos": [
+				12.0,
+				0.0,
+				42.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_barrel",
+			"pos": [
+				-12.0,
+				0.0,
+				44.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_barrel",
+			"pos": [
+				30.0,
+				0.0,
+				8.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_tyre",
+			"pos": [
+				-30.0,
+				0.0,
+				8.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_rock_a",
+			"pos": [
+				16.0,
+				0.0,
+				-10.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_rock_a",
+			"pos": [
+				-16.0,
+				0.0,
+				-12.0
+			],
+			"rot": 90.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				-20.0,
+				0.0,
+				-4.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_dead_tree",
+			"pos": [
+				21.0,
+				0.0,
+				2.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bush",
+			"pos": [
+				-10.0,
+				0.0,
+				-7.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bush",
+			"pos": [
+				10.0,
+				0.0,
+				-8.0
+			],
+			"rot": 70.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_bush",
+			"pos": [
+				3.0,
+				0.0,
+				-11.5
+			],
+			"rot": 140.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_flowers",
+			"pos": [
+				-6.0,
+				0.0,
+				1.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_flowers",
+			"pos": [
+				6.0,
+				0.0,
+				1.5
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "prop",
+			"prefab": "prop_flowers",
+			"pos": [
+				-1.0,
+				0.0,
+				-6.0
+			],
+			"rot": 0.0
+		},
+		{
+			"kind": "bin",
+			"items": [
+				"bag",
+				"can",
+				"bottle"
+			],
+			"pos": [
+				21.0,
+				0.0,
+				39.0
+			]
+		},
+		{
+			"kind": "bin",
+			"items": [
+				"apple_core",
+				"plank",
+				"apple_core"
+			],
+			"pos": [
+				-25.0,
+				0.0,
+				39.0
+			]
+		},
+		{
+			"kind": "bin",
+			"items": [
+				"cardboard",
+				"can",
+				"pizza_box"
+			],
+			"pos": [
+				-10.0,
+				0.0,
+				51.0
+			]
+		},
+		{
+			"kind": "bin",
+			"items": [
+				"bag",
+				"bottle",
+				"can"
+			],
+			"pos": [
+				1.5,
+				0.0,
+				-33.0
+			]
 		}
 	]
 }

@@ -6,7 +6,10 @@ const GROUND_SHADER_PATH := "res://shaders/ground.gdshader"
 const CHARACTER_RIM := 0.9
 const VIGNETTE_SHADER_PATH := "res://shaders/vignette.gdshader"
 
+const MODEL_BLACK_LUMA := 0.03
+
 var _materials: Dictionary = {}
+var _model_materials: Dictionary = {}
 var _ground: ShaderMaterial
 var _tweens: Dictionary = {}
 
@@ -41,6 +44,37 @@ func apply(node: Node, inherited_group: String = "concrete") -> void:
 		(node as MeshInstance3D).material_override = material(group)
 	for child in node.get_children():
 		apply(child, group)
+
+
+## Imported models keep their own colours, textures and vertex colours, but still go through
+## the world shader so they dust and restore with everything else. Surfaces painted near-black
+## (some garbage exports lose their diffuse colour) take the prefab's tint group instead.
+func apply_model(node: Node, tint_group: String) -> void:
+	if node is MeshInstance3D and (node as MeshInstance3D).mesh != null:
+		var instance := node as MeshInstance3D
+		for surface in instance.mesh.get_surface_count():
+			instance.set_surface_override_material(surface, _model_material(instance.mesh, surface, tint_group))
+	for child in node.get_children():
+		apply_model(child, tint_group)
+
+
+func _model_material(mesh: Mesh, surface: int, tint_group: String) -> ShaderMaterial:
+	var source := mesh.surface_get_material(surface) as BaseMaterial3D
+	var color := Palette.tint(tint_group)
+	var texture: Texture2D = null
+	if source != null:
+		texture = source.albedo_texture
+		if source.albedo_color.get_luminance() > MODEL_BLACK_LUMA or texture != null:
+			color = source.albedo_color
+	var vertex_colors: bool = mesh.surface_get_format(surface) & Mesh.ARRAY_FORMAT_COLOR != 0
+	var key := "%s|%s|%s" % [color.to_html(), texture.get_rid() if texture != null else "", vertex_colors]
+	if not _model_materials.has(key):
+		var mat := material(tint_group).duplicate() as ShaderMaterial
+		mat.set_shader_parameter("tint", color)
+		mat.set_shader_parameter("albedo_tex", texture)
+		mat.set_shader_parameter("use_vertex_color", 1.0 if vertex_colors else 0.0)
+		_model_materials[key] = mat
+	return _model_materials[key]
 
 
 func set_tower(index: int, position: Vector3, radius: float) -> void:

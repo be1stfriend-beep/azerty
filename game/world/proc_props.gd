@@ -110,8 +110,23 @@ static func build(prefab_id: String) -> Node3D:
 			for i in 3:
 				part(fan, box(Vector3(0.35, 1.4, 0.08)), Vector3(0, 0.7, 0).rotated(Vector3.BACK, i * TAU / 3.0), "bone", Vector3(0, 0, rad_to_deg(i * TAU / 3.0)))
 			_cylinder_collision(root, 1.2, 6.0)
+		"trash_bag":
+			part(root, sphere(0.35), Vector3(0, 0.3, 0), "", Vector3.ZERO, Vector3(1, 0.85, 1))
+			part(root, cyl(0.05, 0.12, 0.2), Vector3(0, 0.62, 0), "soot")
+		"trash_pizza_box":
+			part(root, box(Vector3(0.7, 0.08, 0.7)), Vector3(0, 0.04, 0))
+			part(root, box(Vector3(0.7, 0.03, 0.7)), Vector3(0, 0.25, -0.3), "", Vector3(-60, 0, 0))
 		_:
 			if ProcPuzzleProps.build_into(root, prefab_id):
+				return root
+			# Model-only set dressing names its own stand-in size, so a missing model still blocks the same way.
+			var prefab := Data.prefab(prefab_id)
+			if prefab.has("fallback_size"):
+				var size_list: Array = prefab["fallback_size"]
+				var size := Vector3(size_list[0], size_list[1], size_list[2])
+				part(root, box(size), Vector3(0, size.y * 0.5, 0))
+				if prefab.get("solid", false):
+					box_collision(root, size)
 				return root
 			push_error("ProcProps: no builder for '%s'" % prefab_id)
 			part(root, box(Vector3.ONE), Vector3(0, 0.5, 0))

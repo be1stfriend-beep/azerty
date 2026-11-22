@@ -1,23 +1,23 @@
 {
 	"trash_bottle": {
 		"model": "res://assets/models/Garbage/EmptyBottle.fbx",
-		"scale": 10.0,
-		"tint_group": "plastic"
+		"tint_group": "plastic",
+		"fit_height": 0.75
 	},
 	"trash_can": {
 		"model": "res://assets/models/Garbage/Lata.fbx",
-		"scale": 16.0,
-		"tint_group": "metal"
+		"tint_group": "metal",
+		"fit_height": 0.5
 	},
 	"trash_cardboard": {
 		"model": "res://assets/models/Garbage/StripedBox.fbx",
-		"scale": 1.8,
-		"tint_group": "paper"
+		"tint_group": "paper",
+		"fit_height": 0.7
 	},
 	"trash_apple_core": {
 		"model": "res://assets/models/Garbage/RottenApple.fbx",
-		"scale": 5.0,
-		"tint_group": "compost"
+		"tint_group": "compost",
+		"fit_height": 0.5
 	},
 	"trash_plank": {
 		"model": "res://assets/models/kenney_nature-kit/Models/FBX format/log.fbx",
@@ -1015,5 +1015,262 @@
 		"model": "res://assets/models/kenney_modular-buildings/Models/GLB format/window-white.glb",
 		"scale": 1.0,
 		"tint_group": "concrete"
+	},
+	"trash_bag": {
+		"model": "res://assets/models/Garbage/BolsaN1.fbx",
+		"fit_height": 0.8,
+		"tint_group": "plastic"
+	},
+	"trash_pizza_box": {
+		"model": "res://assets/models/Garbage/PizzaBoxFBX.fbx",
+		"fit_height": 0.4,
+		"tint_group": "paper"
+	},
+	"prop_dumpster": {
+		"model": "res://assets/models/Garbage/Dumpster.fbx",
+		"fit_height": 1.7,
+		"tint_group": "rust",
+		"solid": true,
+		"fallback_size": [
+			3.0,
+			1.7,
+			1.5
+		]
+	},
+	"prop_full_bin": {
+		"model": "res://assets/models/Garbage/FilledTrashcan.fbx",
+		"fit_height": 1.1,
+		"tint_group": "metal",
+		"solid": true,
+		"fallback_size": [
+			0.6,
+			1.1,
+			0.5
+		]
+	},
+	"prop_bag_pile": {
+		"model": "res://assets/models/Garbage/BolsaN2.fbx",
+		"fit_height": 0.9,
+		"tint_group": "soot",
+		"solid": false,
+		"fallback_size": [
+			0.9,
+			0.9,
+			0.9
+		]
+	},
+	"prop_egg_carton": {
+		"model": "res://assets/models/Garbage/EggCarton.fbx",
+		"fit_height": 0.5,
+		"tint_group": "paper",
+		"solid": false,
+		"fallback_size": [
+			0.8,
+			0.5,
+			0.5
+		]
+	},
+	"prop_container_a": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/shipping-container-a.glb",
+		"fit_height": 2.6,
+		"tint_group": "rust",
+		"solid": true,
+		"fallback_size": [
+			2.8,
+			2.6,
+			6.1
+		]
+	},
+	"prop_container_b": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/shipping-container-b.glb",
+		"fit_height": 2.6,
+		"tint_group": "rust",
+		"solid": true,
+		"fallback_size": [
+			2.8,
+			2.6,
+			6.1
+		]
+	},
+	"prop_container_c": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/shipping-container-c.glb",
+		"fit_height": 2.6,
+		"tint_group": "rust",
+		"solid": true,
+		"fallback_size": [
+			2.8,
+			2.6,
+			6.1
+		]
+	},
+	"prop_ruin_a": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-a.glb",
+		"fit_height": 6.0,
+		"tint_group": "concrete",
+		"solid": true,
+		"fallback_size": [
+			8.0,
+			6.0,
+			5.0
+		]
+	},
+	"prop_ruin_b": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-d.glb",
+		"fit_height": 7.0,
+		"tint_group": "concrete",
+		"solid": true,
+		"fallback_size": [
+			8.0,
+			7.0,
+			6.0
+		]
+	},
+	"prop_ruin_c": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-g.glb",
+		"fit_height": 8.0,
+		"tint_group": "concrete",
+		"solid": true,
+		"fallback_size": [
+			8.0,
+			8.0,
+			6.0
+		]
+	},
+	"prop_ruin_d": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/building-k.glb",
+		"fit_height": 6.0,
+		"tint_group": "concrete",
+		"solid": true,
+		"fallback_size": [
+			7.0,
+			6.0,
+			6.0
+		]
+	},
+	"prop_chimney": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/chimney-large.glb",
+		"fit_height": 10.0,
+		"tint_group": "soot",
+		"solid": true,
+		"fallback_size": [
+			6.0,
+			10.0,
+			6.0
+		],
+		"solid_shrink": 0.6
+	},
+	"prop_tank": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/detail-tank-large.glb",
+		"fit_height": 3.0,
+		"tint_group": "rust",
+		"solid": true,
+		"fallback_size": [
+			4.5,
+			3.0,
+			5.0
+		],
+		"solid_shrink": 0.85
+	},
+	"prop_windmill": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/windmill.glb",
+		"fit_height": 9.0,
+		"tint_group": "concrete",
+		"solid": true,
+		"fallback_size": [
+			1.0,
+			9.0,
+			1.0
+		],
+		"solid_shrink": 0.2
+	},
+	"prop_solar_wreck": {
+		"model": "res://assets/models/kenney_city-kit-industrial_2.0/Models/GLB format/solar-panel-flat.glb",
+		"fit_height": 0.8,
+		"tint_group": "metal",
+		"solid": false,
+		"fallback_size": [
+			2.0,
+			0.8,
+			1.2
+		]
+	},
+	"prop_dead_tree": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_tree_dead_01.glb",
+		"fit_height": 4.5,
+		"tint_group": "wood",
+		"solid": false,
+		"fallback_size": [
+			0.6,
+			4.5,
+			0.6
+		]
+	},
+	"prop_rock_a": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_03.glb",
+		"fit_height": 1.4,
+		"tint_group": "concrete",
+		"solid": true,
+		"fallback_size": [
+			2.2,
+			1.4,
+			2.2
+		],
+		"solid_shrink": 0.8
+	},
+	"prop_rock_b": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_rock_03.glb",
+		"fit_height": 2.0,
+		"tint_group": "concrete",
+		"solid": true,
+		"fallback_size": [
+			3.0,
+			2.2,
+			3.0
+		],
+		"solid_shrink": 0.8
+	},
+	"prop_log": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_log_01.glb",
+		"fit_height": 0.6,
+		"tint_group": "wood",
+		"solid": false,
+		"fallback_size": [
+			2.0,
+			0.6,
+			0.6
+		]
+	},
+	"prop_stump": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_stump_01.glb",
+		"fit_height": 0.8,
+		"tint_group": "wood",
+		"solid": false,
+		"fallback_size": [
+			0.8,
+			0.8,
+			0.8
+		]
+	},
+	"prop_bush": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_bush_02.glb",
+		"fit_height": 1.0,
+		"tint_group": "compost",
+		"solid": false,
+		"fallback_size": [
+			1.2,
+			1.0,
+			1.2
+		]
+	},
+	"prop_flowers": {
+		"model": "res://assets/models/21-lowpoly-nature-starter-pack-glb/models/nature_flower_01.glb",
+		"fit_height": 0.5,
+		"tint_group": "compost",
+		"solid": false,
+		"fallback_size": [
+			0.5,
+			0.5,
+			0.5
+		]
 	}
 }

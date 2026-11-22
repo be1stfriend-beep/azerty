@@ -14,7 +14,7 @@ static func load_level(level_name: String, parent: Node) -> Node3D:
 	var world := Node3D.new()
 	world.name = "World"
 	parent.add_child(world)
-	_add_lighting(world)
+	var env := _add_lighting(world)
 	world.add_child(_ground())
 	var entities := Node3D.new()
 	entities.name = "Entities"
@@ -44,6 +44,7 @@ static func load_level(level_name: String, parent: Node) -> Node3D:
 		ring.name = "DomeRing"
 		ring.position = dome
 		world.add_child(ring)
+		world.add_child(PollutionFog.new(env))
 	return world
 
 
@@ -79,7 +80,7 @@ static func ground_ring(radius: float, tint_group: String) -> MeshInstance3D:
 	return ring
 
 
-static func _add_lighting(world: Node3D) -> void:
+static func _add_lighting(world: Node3D) -> Environment:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Palette.HAZE_SKY
@@ -94,3 +95,4 @@ static func _add_lighting(world: Node3D) -> void:
 	sun.light_color = Palette.BONE
 	sun.shadow_enabled = false
 	world.add_child(sun)
+	return env
