@@ -14,7 +14,7 @@ var _controller: MountController
 
 
 func _run() -> void:
-	Game.start_local_match()
+	Game.start_local_match(LEVEL)
 	await get_tree().process_frame
 	_bjorn_id = Net.peer_for_character(Characters.Character.BJORN)
 	_imad_id = Net.peer_for_character(Characters.Character.IMAD)

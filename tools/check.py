@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BOOT_FRAMES = "120"
 BOOT_TIMEOUT = 120
 AUTOTEST_TIMEOUT = 240
+AUTOTESTS = ("--autotest", "--autotest-slice")
 ERROR_MARKERS = ("SCRIPT ERROR", "Parse Error", "ERROR:")
 
 
@@ -41,15 +42,18 @@ def main() -> int:
     ok &= data_code == 0
     parts.append("data OK" if data_code == 0 else "data FAIL")
 
-    test_code, test_out = run([godot, "--headless", "--path", str(ROOT), "--", "--autotest"], AUTOTEST_TIMEOUT)
-    lines = test_out.splitlines()
-    passes = sum(line.startswith("PASS ") for line in lines)
-    fails = [line for line in lines if line.startswith("FAIL ")]
-    test_errors = engine_errors(test_out)
-    ok &= test_code == 0 and not fails and not test_errors and passes > 0
-    parts.append(f"autotest {passes} PASS {len(fails)} FAIL {len(test_errors)} engine errors (exit {test_code})")
+    report = boot_errors + data_out.splitlines() * (data_code != 0)
+    for flag in AUTOTESTS:
+        test_code, test_out = run([godot, "--headless", "--path", str(ROOT), "--", flag], AUTOTEST_TIMEOUT)
+        lines = test_out.splitlines()
+        passes = sum(line.startswith("PASS ") for line in lines)
+        fails = [line for line in lines if line.startswith("FAIL ")]
+        test_errors = engine_errors(test_out)
+        ok &= test_code == 0 and not fails and not test_errors and passes > 0
+        parts.append(f"{flag[2:]} {passes} PASS {len(fails)} FAIL {len(test_errors)} engine errors (exit {test_code})")
+        report += fails + test_errors
 
-    for line in boot_errors + data_out.splitlines() * (data_code != 0) + fails + test_errors:
+    for line in report:
         print("  " + line)
     print(("check PASS: " if ok else "check FAIL: ") + " | ".join(parts))
     return 0 if ok else 1

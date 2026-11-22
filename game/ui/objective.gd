@@ -6,15 +6,22 @@ class_name Objective
 const HUNTING_STATES: Array[String] = [Cockroach.CHASE, Cockroach.WINDUP, Cockroach.CHARGE]
 const SLICE_RECIPE := "mask"
 const TOWER_RECIPE := "filter"
+const BROOM_TOOL := "broomstick"
 
 
 static func text() -> String:
 	var state := TeamState.state
 	if state.get("slice_complete", false):
 		return Data.hint("objective_complete")
-	if _roach_hunting():
-		return Data.hint("objective_flee")
-	if state.get("hunt", SliceHunt.HUNT_NONE) == SliceHunt.HUNT_DONE:
+	var after_hunt: bool = state.get("hunt", SliceHunt.HUNT_NONE) == SliceHunt.HUNT_DONE
+	# With a broom, a woken roach is a chance to fight rather than a reason to run.
+	var armed := after_hunt and BROOM_TOOL in (state.get("tools", []) as Array)
+	var roach := _roach_state()
+	if armed and roach == Cockroach.STUNNED:
+		return Data.hint("objective_broom")
+	if roach in HUNTING_STATES:
+		return Data.hint("objective_lure") if armed else Data.hint("objective_flee")
+	if after_hunt:
 		return _tower_step(state)
 	if _bin_near_own_bjorn():
 		return Data.hint("objective_kick_bin")
@@ -46,8 +53,9 @@ static func _bin_near_own_bjorn() -> bool:
 	return Bin.find(bjorn.get_tree(), bjorn.global_position, float(Data.balance("bin_hint_distance"))) != null
 
 
-static func _roach_hunting() -> bool:
+## Empty when there is no roach in this world.
+static func _roach_state() -> String:
 	if Game.world == null:
-		return false
+		return ""
 	var roach := Game.world.get_node_or_null("cockroach") as Cockroach
-	return roach != null and roach.machine.state in HUNTING_STATES
+	return roach.machine.state if roach != null else ""

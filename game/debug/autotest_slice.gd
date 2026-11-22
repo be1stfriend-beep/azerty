@@ -13,22 +13,26 @@ const RETURN_TIMEOUT := 30.0
 const BIN_KICK_OFFSET := Vector3(0, 0, 1.5)
 ## Imad's distance from the roach for a broom swing: inside tongs reach plus broom radius.
 const BROOM_STAND := 2.0
+const ROUNDS := 2
 
 
 func _run() -> void:
-	Game.start_local_match()
-	await get_tree().process_frame
-	_bjorn_id = Net.peer_for_character(Characters.Character.BJORN)
-	_imad_id = Net.peer_for_character(Characters.Character.IMAD)
-	print("autotest-slice: fake peer ids bjorn=%d imad=%d" % [_bjorn_id, _imad_id])
-	_kick_bin()
-	await _collect_dome_trash()
-	await _recycle_all()
-	_check_barrier("barrier_holds_without_mask", true)
-	_craft_mask()
-	_check_barrier("barrier_lifts_with_mask", false)
-	await _collect_outside_trash()
-	await _return_to_dome()
+	# The game only counts as working if a restart from the card plays through again.
+	for round_index in ROUNDS:
+		Game.start_local_match()
+		await get_tree().process_frame
+		_bjorn_id = Net.peer_for_character(Characters.Character.BJORN)
+		_imad_id = Net.peer_for_character(Characters.Character.IMAD)
+		print("autotest-slice: round %d, fake peer ids bjorn=%d imad=%d" % [round_index + 1, _bjorn_id, _imad_id])
+		_check("fresh_state", _is_fresh(), "hunt '%s', complete %s, towers %s" % [TeamState.state.get("hunt", ""), TeamState.state.get("slice_complete", false), TeamState.state["towers"]])
+		_kick_bin()
+		await _collect_dome_trash()
+		await _recycle_all()
+		_check_barrier("barrier_holds_without_mask", true)
+		_craft_mask()
+		_check_barrier("barrier_lifts_with_mask", false)
+		await _collect_outside_trash()
+		await _return_to_dome()
 	print("autotest-slice: %d PASS, %d FAIL" % [_passes, _failures])
 	get_tree().quit(1 if _failures > 0 else 0)
 
@@ -161,12 +165,21 @@ func _broom_fight() -> void:
 	var imad := Game.player(Characters.Character.IMAD)
 	imad.respawn(roach.global_position + Vector3(0, 0, -BROOM_STAND))
 	var swings := ceili(float(roach.hp) / float(Data.balance("broom_damage")))
+	roach._set_state(Cockroach.STUNNED)
+	_check("objective_broom", Objective.text() == Data.hint("objective_broom"), "objective '%s'" % Objective.text())
 	for i in swings:
 		roach._set_state(Cockroach.STUNNED)
 		TeamState._server_use_tool(roach.global_position, _imad_id)
 	var gone := await _wait_for(func() -> bool: return roach.machine.state == Cockroach.GONE, RETURN_TIMEOUT)
 	_check("broom_defeats_roach", gone and not roach.visible, "roach %s, hp %d after %d swings" % [roach.machine.state, roach.hp, swings])
 	TeamState._server_tool_next(_imad_id)
+
+
+## No progress, outcome or hidden-roach state may leak from the previous round.
+func _is_fresh() -> bool:
+	var roach := Game.world.get_node("cockroach") as Cockroach
+	var empty := (TeamState.state["towers"] as Array).is_empty() and (TeamState.state["inventory"] as Dictionary).is_empty()
+	return empty and not TeamState.state.has("hunt") and not TeamState.state.has("slice_complete") and roach.machine.state == Cockroach.IDLE and not roach.visible
 
 
 func _empty_bag() -> void:

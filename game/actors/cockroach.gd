@@ -76,7 +76,8 @@ func _process(delta: float) -> void:
 
 ## Host: both players ran out of air, so the fight starts over.
 func reset() -> void:
-	if machine.state == GONE:
+	# A beaten roach is already leaving: a knockout must not undo the win.
+	if machine.state == GONE or hp == 0:
 		return
 	hp = int(Data.balance("roach_hp"))
 	# Once it has given up a hunt, a knockout sends it home instead of restarting the hunt.

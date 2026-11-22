@@ -20,6 +20,8 @@ const BAIT_BJORN_FAR := Vector3(30, 0, 10)
 ## Where a charge from the south stops against the pillar at (0,0,36).
 const STUN_SPOT := Vector3(0, 0, 39.1)
 const FLEE_TIMEOUT := 12.0
+## Every position above is authored against this level, not the configured start level.
+const LEVEL := "main"
 
 var _failures := 0
 var _passes := 0
@@ -32,7 +34,7 @@ func _ready() -> void:
 
 
 func _run() -> void:
-	Game.start_local_match()
+	Game.start_local_match(LEVEL)
 	await get_tree().process_frame
 	_bjorn_id = Net.peer_for_character(Characters.Character.BJORN)
 	_imad_id = Net.peer_for_character(Characters.Character.IMAD)

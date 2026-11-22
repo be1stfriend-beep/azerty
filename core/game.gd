@@ -113,8 +113,9 @@ func start_match() -> void:
 
 
 ## Offline single-process match for the autotest: the same flow as a networked start.
-func start_local_match() -> void:
-	_rpc_start_match(Data.config().get("start_level", "main"))
+## An empty level name means the configured start level.
+func start_local_match(level_name: String = "") -> void:
+	_rpc_start_match(level_name if not level_name.is_empty() else Data.config().get("start_level", "main"))
 
 
 @rpc("authority", "call_local", "reliable")

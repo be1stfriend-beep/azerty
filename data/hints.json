@@ -9,6 +9,8 @@
 	"objective_craft_filter": "Craft a Filter at the Bench",
 	"objective_tower": "Take the Filter to the tower in the dead forest (west)",
 	"objective_tower_lit": "The forest breathes again",
+	"objective_lure": "Lead the roach into the pillar by its lair to stun it",
+	"objective_broom": "It is stunned. Imad, hit it with the broom!",
 	"objective_kick_bin": "Kick the bin, Bjorn",
 	"roach_defeated": "The roach is beaten. It crawls into its lair and stays there.",
 	"hunt_warning": "Something big is coming. Run to the Dome!",
