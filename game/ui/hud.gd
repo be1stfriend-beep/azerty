@@ -58,6 +58,7 @@ func _ready() -> void:
 	_stash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_stash)
 	_root.add_child(InventionCard.new())
+	_root.add_child(DomeArrow.new())
 	Events.state_changed.connect(_refresh)
 	Events.air_changed.connect(_refresh_air)
 	Events.material_produced.connect(_fly_block)

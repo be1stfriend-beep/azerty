@@ -22,9 +22,13 @@ const FLEE_SPEED_MULT := 2.0
 const TURN_SPEED := 8.0
 const SNAP_DISTANCE := 6.0
 const AWAKE_STATES: Array[String] = [CHASE, WINDUP, CHARGE, STUNNED]
+## How close to the Dome ring counts as "at the edge" for the give-up roar.
+const EDGE_TOLERANCE := 0.5
 
 var machine := StateMachine.new(IDLE)
 var hp := 0
+## Slice: hidden and asleep until SliceHunt sends it; gives up at the Dome edge.
+var hunt_only := false
 
 var _spawn := Vector3.ZERO
 var _charge_dir := Vector3.FORWARD
@@ -46,6 +50,7 @@ func _ready() -> void:
 	_rig = RoachBuilder.build()
 	add_child(_rig)
 	machine.changed.connect(_on_local_state_changed)
+	visible = not hunt_only
 
 
 func _process(delta: float) -> void:
@@ -69,6 +74,21 @@ func reset() -> void:
 	position = _spawn
 	_set_state(IDLE)
 	_refresh_bar()
+
+
+## Host: the slice hunt starts here, wherever SliceHunt put the roach.
+func server_hunt(spawn: Vector3) -> void:
+	_rpc_hunt.rpc(spawn)
+	_set_state(CHASE)
+
+
+## Sent before the CHASE state on the same reliable channel, so it arrives first.
+@rpc("authority", "call_local", "reliable")
+func _rpc_hunt(spawn: Vector3) -> void:
+	_spawn = spawn
+	position = spawn
+	_target_position = spawn
+	show()
 
 
 ## Host: a broom swing from Imad. Only counts while stunned.
@@ -111,11 +131,15 @@ func _think(delta: float) -> void:
 	var target := RoachTargets.nearest(position)
 	match machine.state:
 		IDLE:
+			if hunt_only:
+				return
 			for player in RoachTargets.players():
 				if player.global_position.distance_to(position) <= float(Data.balance("roach_wake_distance")):
 					_set_state(CHASE)
 		CHASE:
 			if target == null:
+				if hunt_only:
+					_approach_dome_edge(delta)
 				return
 			_face(target.global_position, delta)
 			var to_target := _flat(target.global_position - position)
@@ -126,6 +150,10 @@ func _think(delta: float) -> void:
 			if target != null:
 				_face(target.global_position, delta)
 			if machine.elapsed >= float(Data.balance("roach_windup")):
+				# Everyone made it inside: the windup was the give-up roar.
+				if target == null and hunt_only:
+					_set_state(FLEE)
+					return
 				_charge_dir = global_basis.z
 				_set_state(CHARGE)
 		CHARGE:
@@ -139,8 +167,20 @@ func _think(delta: float) -> void:
 			_face(_spawn, delta)
 			var to_spawn := _flat(_spawn - position)
 			position += to_spawn.normalized() * float(Data.balance("roach_chase_speed")) * FLEE_SPEED_MULT * delta
-			if to_spawn.length() <= FLEE_ARRIVE_DISTANCE or machine.elapsed >= FLEE_SECONDS:
+			var limit := float(Data.balance("roach_flee_remove_seconds")) if hunt_only else FLEE_SECONDS
+			if to_spawn.length() <= FLEE_ARRIVE_DISTANCE or machine.elapsed >= limit:
 				_set_state(GONE)
+	position = RoachTargets.outside_dome(position, BODY_RADIUS)
+
+
+## Slice: nobody left to chase, so it runs up to the Dome ring and roars there.
+func _approach_dome_edge(delta: float) -> void:
+	var center := RoachTargets.dome_center()
+	_face(center, delta)
+	var to_center := _flat(center - position)
+	position += to_center.normalized() * float(Data.balance("roach_chase_speed")) * delta
+	if to_center.length() <= float(Data.balance("dome_radius")) + BODY_RADIUS + EDGE_TOLERANCE:
+		_set_state(WINDUP)
 
 
 func _check_charge_hits() -> void:
@@ -236,6 +276,7 @@ func _on_local_state_changed(state: String) -> void:
 	if state == IDLE:
 		position = _spawn
 		_target_position = _spawn
+		visible = not hunt_only
 	if state == GONE:
 		hide()
 		Gate.open(Game.world)

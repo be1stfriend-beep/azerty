@@ -38,6 +38,21 @@ static func valid() -> Array[PlayerBase]:
 	return result
 
 
+static func dome_center() -> Vector3:
+	return Game.world.get_meta("dome", Vector3.ZERO)
+
+
+## The closest point to `pos` that keeps a body of `margin` radius outside the Dome ring.
+static func outside_dome(pos: Vector3, margin: float) -> Vector3:
+	var center := dome_center()
+	var offset := Vector3(pos.x - center.x, 0.0, pos.z - center.z)
+	var edge := float(Data.balance("dome_radius")) + margin
+	if offset.length() >= edge or offset.length() < 0.01:
+		return pos
+	var clamped := center + offset.normalized() * edge
+	return Vector3(clamped.x, pos.y, clamped.z)
+
+
 static func nearest(from: Vector3) -> PlayerBase:
 	var targets := valid()
 	for player in targets:

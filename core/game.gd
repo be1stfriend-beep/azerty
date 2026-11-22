@@ -139,9 +139,13 @@ func _spawn_players() -> void:
 	world.add_child(TrashHider.new())
 	world.add_child(InteractionCues.new())
 	world.add_child(AirSystem.new())
-	if world.get_meta("mask_gate", false):
+	# The slice runs its own short loop: no story beats, and the roach only comes when sent.
+	var slice: bool = world.get_meta("mask_gate", false)
+	if slice:
 		world.add_child(DomeGate.new())
+		world.add_child(SliceHunt.new())
 	var roach := Cockroach.new()
+	roach.hunt_only = slice
 	var roach_marker := world.get_node_or_null("Markers/roach") as Node3D
 	if roach_marker != null:
 		roach.position = roach_marker.position
@@ -149,7 +153,8 @@ func _spawn_players() -> void:
 	world.add_child(Hud.new())
 	var dialogue := DialogueBox.new()
 	world.add_child(dialogue)
-	world.add_child(Story.new(dialogue))
+	if not slice:
+		world.add_child(Story.new(dialogue))
 	_craft_menu = CraftMenu.new()
 	world.add_child(_craft_menu)
 	var own: PlayerBase

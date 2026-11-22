@@ -15,6 +15,13 @@ var partner: Node3D
 
 var _focus := Vector3.ZERO
 var _distance := MIN_DISTANCE
+var _shake_left := 0.0
+var _shake_strength := 0.0
+
+
+func shake(strength: float, seconds: float) -> void:
+	_shake_strength = strength
+	_shake_left = seconds
 
 
 func setup(local_node: Node3D, partner_node: Node3D) -> void:
@@ -41,9 +48,12 @@ func _process(delta: float) -> void:
 	var weight := 1.0 - exp(-FOLLOW_LERP * delta)
 	_focus = _focus.lerp(target_focus, weight)
 	_distance = lerpf(_distance, target_distance, weight)
+	_shake_left = maxf(_shake_left - delta, 0.0)
 	_place()
 
 
 func _place() -> void:
 	# The view direction is fixed, so the camera simply backs away from the focus along it.
 	global_position = _focus + global_basis.z * _distance
+	if _shake_left > 0.0:
+		global_position += Vector3(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0), 0.0) * _shake_strength
